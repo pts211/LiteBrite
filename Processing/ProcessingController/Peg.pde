@@ -1,7 +1,7 @@
 public class Peg
 {
   
-  int diameter = 20;
+  final static int DIAMETER = 20;
   Point p;
   color c;
   
@@ -38,7 +38,7 @@ public class Peg
   void draw()
   {
     fill(c);
-    ellipse(p.getX(), p.getY(), diameter, diameter);
+    ellipse(p.getX(), p.getY(), DIAMETER, DIAMETER);
   }
   
   

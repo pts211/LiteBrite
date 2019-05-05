@@ -39,14 +39,14 @@ void mousePressed()
   for (int i = 0; i < pegs.length; i++) {
     Point pP = pegs[i].getPoint();
     
-    if(containmentCheck(mP, pP)){
-      println("Clicked peg " + i + " !"); 
+    if(containmentCheck(mP, pP, Peg.DIAMETER/2)){
+      println("Clicked peg " + i + "."); 
       pegs[i].nextColor();
     }
   }
 }
 
-boolean containmentCheck(Point p1, Point p2)
+boolean containmentCheck(Point p1, Point p2, int radius)
 {
   //if d^2 <= r^2 we're in the circle. Via Pythagorean theorem
   //d^2 = (p1.x - p2.x)^2 + (p1.y - p2.y)^2 
@@ -54,14 +54,13 @@ boolean containmentCheck(Point p1, Point p2)
   int px = (p1.getX() - p2.getX());
   int py = (p1.getY() - p2.getY());
   
-  int r2 = 10*10;
+  int r2 = radius*radius;
   int d2 = (px*px) + (py*py);
   
   if(d2 <= r2){
     return true;
-  }else{
-    return false; 
   }
+  return false;
 }
 
 void drawRing(float x, float y, float hue, float intensity, float size) {
