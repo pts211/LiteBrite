@@ -24,7 +24,8 @@ void setup() {
 
   // create a new datagram connection on port 6000
   // and wait for incomming message
-  udp = new UDP( this, 6235 );
+  //udp = new UDP( this, 6235 );
+  udp = new UDP( this, 6235, "192.168.1.100");
   //udp.log( true );     // <-- printout the connection activity
   udp.listen( true );
   
@@ -38,7 +39,6 @@ void draw() {;}
  * on key pressed event:
  * send the current key value over the network
  */
-
 void keyPressed() {
     
     String message  = str( key );  // the message to send
