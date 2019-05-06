@@ -7,7 +7,7 @@ public class Peg
   
   Peg(Point p){
     this.p = p;
-    this.c = #ffffff;
+    this.c = Colors.BLACK;
   }
   
   Point getPoint()
@@ -38,7 +38,11 @@ public class Peg
   void draw()
   {
     fill(c);
+    stroke(#ffffff);
     ellipse(p.getX(), p.getY(), DIAMETER, DIAMETER);
+    //stroke(#ffffff);
+    //arc(p.getX(), p.getY(), DIAMETER, DIAMETER, 0, 2*3.14159);
+    
   }
   
   
