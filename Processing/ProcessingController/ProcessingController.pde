@@ -1,11 +1,8 @@
 //This is a sketch to control the LiteBrite created for DevCon 2019.
 //Author: Paul Sites (ps022648)
 
-
-
 // import UDP library
 import hypermedia.net.*;
-
 
 PegGrid grid;
 
@@ -23,7 +20,8 @@ Peg[] pegs = new Peg[GRID_W*GRID_H];
 void setup()
 {
   //Configure network.
-  udp = new UDP( this, 5400 );
+  //udp = new UDP( this, 5400 );
+  udp = new UDP( this, 5400, "192.168.1.100" );
   //udp.log( true );     // <-- printout the connection activity
   udp.listen( true );
   

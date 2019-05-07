@@ -1,5 +1,6 @@
 public class PegGrid
 {
+  final static boolean staggered = true;
   final static int GRID_W = 38;
   final static int GRID_H = 24;
   
@@ -20,8 +21,8 @@ public class PegGrid
     opc = new OPC(parent, "127.0.0.1", 7890);
     opc.showLocations(true);
     
-    opc.ledGrid(0, GRID_W, GRID_H, width/2.0, height/2.0, 20.0, 20.0, 0, true);
-
+    generateGrid();
+    
     for (int i = 0; i < pegs.length; i++) {
         Point p = opc.getLocationByIndex(i);
         pegs[i] = new Peg(p);
@@ -30,8 +31,36 @@ public class PegGrid
   }
   
   private void generateGrid()
-  {
+  { 
+    int index = 0;
+    int stripLength = GRID_W;
+    int numStrips = GRID_H;
+    float x = width/2.0;
+    float y = height/2.0;
+    float ledSpacing = 20.0;
+    float stripSpacing = 20.0 ;
+    float angle = 0;
+    boolean zigzag = true;
     
+    float s = sin(angle + HALF_PI);
+    float c = cos(angle + HALF_PI);
+    for (int i = 0; i < numStrips; i++) {
+      boolean reversed = ((i % 2) == 1);
+      
+      if(staggered){
+        opc.ledStrip(index + stripLength * i, stripLength,
+          (x + (i - (numStrips-1)/2.0) * stripSpacing * c) + (reversed?(DIAMETER/2):0),
+          (y + (i - (numStrips-1)/2.0) * stripSpacing * s),
+          ledSpacing,
+          angle, zigzag && reversed);
+      }else{
+        opc.ledStrip(index + stripLength * i, stripLength,
+          (x + (i - (numStrips-1)/2.0) * stripSpacing * c),
+          (y + (i - (numStrips-1)/2.0) * stripSpacing * s),
+          ledSpacing,
+          angle, zigzag && reversed);
+      }
+    }
   }
   
   /* ******************** COLOR FUNCTIONS ******************** */

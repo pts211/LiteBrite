@@ -6,14 +6,11 @@ static uint32_t timer;
 
 static byte myip[] = { 192,168,1,2 };
 static byte gwip[] = { 192,168,1,100 };
-static byte srip[] = { 192,168,1,100 };
+static byte dns[]  = { 192,168,1,100 };
+static byte srip[] = { 192,168,1,100 };  // destination IP
 
-// destination IP
-//static uint8_t serverIP[] = {10, 10, 2, 24};
-static uint8_t serverIP[] = { 192,168,1,100 };
-
-const int dstPort PROGMEM = 5400;
-const int srcPort PROGMEM = 5400;
+const int dstPort PROGMEM = 6000;
+const int srcPort PROGMEM = 6000;
 
 void setup () {
   Serial.begin(9600);
@@ -22,7 +19,7 @@ void setup () {
   if (ether.begin(sizeof Ethernet::buffer, mymac, SS) == 0)
     Serial.println( "Failed to access Ethernet controller");
 
-  ether.staticSetup(myip, gwip);
+  ether.staticSetup(myip, gwip, dns);
   
   ether.printIp("IP:  ", ether.myip);
   ether.printIp("GW:  ", ether.gwip);
@@ -40,7 +37,7 @@ void loop () {
   if (millis() > timer) {
       timer = millis() + 2000;
 
-      Serial.println("Sending to server at: " + ipToString(serverIP));
+      Serial.println("Sending to server at: " + ipToString(srip));
 
      //static void sendUdp (char *data,uint8_t len,uint16_t sport, uint8_t *dip, uint16_t dport);
      ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );

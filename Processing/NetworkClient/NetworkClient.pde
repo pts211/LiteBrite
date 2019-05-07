@@ -25,9 +25,19 @@ void setup() {
   // create a new datagram connection on port 6000
   // and wait for incomming message
   //udp = new UDP( this, 6235 );
-  udp = new UDP( this, 6235, "192.168.1.100");
+  udp = new UDP( this, 6000);
   //udp.log( true );     // <-- printout the connection activity
   udp.listen( true );
+  
+  //udp.loopback(false);
+  
+  println("address: " + udp.address());
+  println("port: " + udp.port());
+  println("listening: " + udp.isListening());
+  println("isMulticast: " + udp.isMulticast());
+  println("isLoopback: " + udp.isLoopback());
+  
+  
   
   println("Listening.");
 }
@@ -43,13 +53,12 @@ void keyPressed() {
     
     String message  = str( key );  // the message to send
     String ip       = "192.168.1.2";  // the remote IP address
-    int port        = 6235;    // the destination port
+    int port        = 6000;    // the destination port
     
     // formats the message for Pd
     message = message+";\n";
     // send the message
     udp.send( message, ip, port );
-    
 }
 
 
@@ -68,7 +77,7 @@ void receive( byte[] data ) {       // <-- default handler
   String message = new String( data );
   println( "receive: \""+message+"\"");
 }
-/*
+/*  
 void receive( byte[] data, String ip, int port ) {  // <-- extended handler
   
   
