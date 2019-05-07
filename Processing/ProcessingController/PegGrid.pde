@@ -1,6 +1,6 @@
 public class PegGrid
 {
-  final static boolean staggered = true;
+  final static boolean staggered = false;
   final static int GRID_W = 38;
   final static int GRID_H = 24;
   
@@ -16,7 +16,7 @@ public class PegGrid
     this.parent = parent;
     this.port = port;
     
-    parent.registerDraw(this);
+    //parent.registerDraw(this);
     
     opc = new OPC(parent, "127.0.0.1", 7890);
     opc.showLocations(true);

@@ -17,6 +17,11 @@ final int GRID_H = 24;
 
 Peg[] pegs = new Peg[GRID_W*GRID_H];
 
+//Image loading
+
+int currentImg = -1;
+PImage[] imgs;
+
 void setup()
 {
   //Configure network.
@@ -33,6 +38,35 @@ void setup()
   
   //Test receiving a message.
   processMessage("192.168.1.4", "10000001000000000000001000000000000000");
+  
+  //Image loading
+  String path = "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/images";
+  println("path: " + path);
+  String[] filenames = listFileNames(path);
+  printArray(filenames);
+  
+   imgs = new PImage[filenames.length];
+   for (int i = 0; i < filenames.length; i++) {
+    imgs[i] = loadImage(path+"/"+filenames[i]);
+  }
+}
+
+String[] listFileNames(String dir) {
+   File file = new File(dir);
+   if (file.isDirectory()) {
+     String names[] = file.list();
+     return names;
+   } else {
+     return null;
+   }
+}
+
+void nextImage()
+{
+  currentImg++;
+  if(currentImg >= imgs.length){
+    currentImg = -1; 
+  }
 }
 
 void mousePressed()
@@ -62,6 +96,8 @@ void keyPressed()
     case 'q':
       grid.setAllRandom();
       break;
+    case 'n':
+      nextImage();
     default:
       break;
   }
@@ -70,6 +106,11 @@ void keyPressed()
 void draw()
 {
   background(0);
+  grid.draw();
+  if(currentImg != -1){
+    imageMode(CENTER);
+    image(imgs[currentImg],width/2, height/2,width/1.25, height/1.25);
+  }
 }
 
 
