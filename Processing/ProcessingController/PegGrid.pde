@@ -95,6 +95,18 @@ public class PegGrid
     } 
   }
   
+  public void loadImg()
+  {
+    loadPixels();
+    
+    for (int i = 0; i < pegs.length; i++) {
+        int pixelLocation = opc.getLocationByIndexAsInt(i);
+        int pixel = pixels[pixelLocation];
+        pegs[i].setColor(pixel);
+    }
+    updatePixels();
+  }
+  
   public void draw()
   {
     for (int i = 0; i < pegs.length; i++) {

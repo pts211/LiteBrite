@@ -20,6 +20,7 @@ Peg[] pegs = new Peg[GRID_W*GRID_H];
 //Image loading
 
 int currentImg = -1;
+boolean hasDrawn = false;
 PImage[] imgs;
 
 void setup()
@@ -35,7 +36,6 @@ void setup()
   
   grid = new PegGrid(this, 7890);
  
-  
   //Test receiving a message.
   processMessage("192.168.1.4", "10000001000000000000001000000000000000");
   
@@ -67,6 +67,7 @@ void nextImage()
   if(currentImg >= imgs.length){
     currentImg = -1; 
   }
+  hasDrawn = false;
 }
 
 void mousePressed()
@@ -107,10 +108,17 @@ void draw()
 {
   background(0);
   grid.draw();
-  if(currentImg != -1){
+  
+  
+  //We only want to draw the image to the screen once to load the image data into
+  //the pegs. That way the image can be changed by clicking a peg.
+  if(currentImg != -1 && !hasDrawn){
     imageMode(CENTER);
     image(imgs[currentImg],width/2, height/2,width/1.25, height/1.25);
+    hasDrawn = true;
+    grid.loadImg();
   }
+  
 }
 
 

@@ -268,6 +268,15 @@ public class OPC
     return new Point( (pixelLocations[index] % width), (pixelLocations[index]/width));
   }
   
+  int getLocationByIndexAsInt(int index)
+  {
+    if(index > getNumPixels()){
+     return -1;
+    }
+    
+    return pixelLocations[index];
+  }
+  
   // Change the number of pixels in our output packet.
   // This is normally not needed; the output packet is automatically sized
   // by draw() and by setPixel().
