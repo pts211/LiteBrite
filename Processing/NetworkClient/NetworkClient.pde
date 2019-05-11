@@ -27,6 +27,7 @@ void setup() {
   //udp = new UDP( this, 6235 );
   udp = new UDP( this, 6000);
   //udp.log( true );     // <-- printout the connection activity
+  udp.log( true );
   udp.listen( true );
   
   //udp.loopback(false);

@@ -31,7 +31,8 @@ void setup () {
   //ether.printIp("SRV: ", ether.hisip);
 }
 
-char textToSend[] = "01010101010101010101010101010101010101";
+//char textToSend[] = "01010101010101010101010101010101010101";
+char textToSend[] = "TEST";
 
 void loop () {
   if (millis() > timer) {
