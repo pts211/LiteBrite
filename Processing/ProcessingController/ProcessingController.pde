@@ -1,5 +1,9 @@
-//This is a sketch to control the LiteBrite created for DevCon 2019.
-//Author: Paul Sites (ps022648)
+/* ProcessingController
+ * Author: Paul Sites (paul.sites@cerner.com)
+ * 
+ *
+ * This is software used to control the LiteBrite created for DevCon 2019.
+ */
 
 // import UDP library
 import hypermedia.net.*;

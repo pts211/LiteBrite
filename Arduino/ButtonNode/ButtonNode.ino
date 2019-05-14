@@ -1,26 +1,29 @@
 /* ButtonNode.ino
  * Author: Paul Sites (paul.sites@cerner.com)
  * 
- * This ButtonNode is part of the LiteBrite project, created for DevCon2019. The LiteBrite, slotted to have 24 rows, 
+ * This ButtonNode is part of the LiteBrite project, created for DevCon 2019. The LiteBrite, slotted to have 24 rows, 
  * will have an arduino per row. Each arduino is responsible for monitoring button input from 38 buttons and passing
  * the data on to the main controller over UDP.
  * 
  * The IP of each Arduino should represent the row that they are positioned on the LiteBrite, starting from the top at 0.
  * The MAC address should be unique for each Arduino.
  * The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
- * 
  */
+ 
+#define ROW_NUMBER   2
+//The ROW_NUMBER will automatically configure the correct IP and unique MAC address.
 
-#include <EtherCard.h>
+
 
 // ****************************************
 // ****************************************
 //        Network Configuration
 // ****************************************
 // ****************************************
+#include <EtherCard.h>
 
-static byte mymac[] = { 0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F };
-static byte myip[] = { 192, 168, 1, 2 };
+static byte mymac[] = { 0x1A, 0x2B, 0x3C, 0x4D, 0x5E, ROW_NUMBER };
+static byte myip[] = { 192, 168, 1, ROW_NUMBER };
 
 static byte srip[] = { 192, 168, 1, 100 }; // destination IP
 static byte gwip[] = { 192, 168, 1, 100 };
@@ -72,6 +75,8 @@ void setup () {
 
   initNetworking();
   initShiftRegisters();
+
+  Serial.println("ButtonNode: Ready.");
 }
 
 void initNetworking()
@@ -81,7 +86,6 @@ void initNetworking()
     Serial.println( "Failed to access Ethernet controller");
   }
 
-
   if (!useDHCP || !ether.dhcpSetup()) { 
     if(useDHCP){
       Serial.println("DHCP failed. Setting static ip."); 
@@ -89,15 +93,16 @@ void initNetworking()
     ether.staticSetup(myip, gwip, dns, mask);
   }
 
-  ether.printIp("IP:  ", ether.myip);
-  ether.printIp("GW:  ", ether.gwip);
-  ether.printIp("DNS: ", ether.dnsip);
+  char mac_cstr[17];
+  ether.makeNetStr(mac_cstr, mymac, sizeof(mymac), ':', 16);
+  Serial.println("\tMAC: " + String(mac_cstr));
+  ether.printIp("\tIP:  ", ether.myip);
+  ether.printIp("\tGW:  ", ether.gwip);
+  ether.printIp("\tDNS: ", ether.dnsip);
 
   //if (!ether.dnsLookup(website))
   //  Serial.println("DNS failed");
   //ether.printIp("SRV: ", ether.hisip);
-
-  Serial.println("");
 }
 
 void initShiftRegisters()
@@ -116,8 +121,6 @@ void initShiftRegisters()
   pinValues = read_shift_regs();
   oldPinValues = pinValues;
   oldDeltaPinValues = deltaPinValues;
-
-  Serial.println("");
 }
 
 //char textToSend[] = "01010101010101010101010101010101010101";
@@ -288,14 +291,6 @@ String create_pin_values_string(BYTES_VAL_T values)
   {
     //Test simplifying.
     tempStr += (values >> i);
-    /*
-      if((pinValues >> i) & 1){
-        temp += "1";
-      }
-      else {
-        temp += "0";
-      }
-    */
   }
   return tempStr;
 }
@@ -306,9 +301,6 @@ String create_pin_values_string()
   tempStr = "";
   for (int i = 0; i < DATA_WIDTH; i++)
   {
-    //Test simplifying.
-    tempStr += (pinValues >> i);
-    
      // if((pinValues >> i) & 1){
      //   temp += "1";
      // }
