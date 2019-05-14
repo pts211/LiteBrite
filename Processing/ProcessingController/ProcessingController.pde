@@ -29,51 +29,77 @@ PImage[] imgs;
 
 void setup()
 {
+  initNetworking();
+  initDisplay();  
+  loadImages();
+
+  //Test receiving a message.
+  processMessage("192.168.1.1", "10000001000000000000001000000000000000");
+  processMessage("192.168.1.2", "10000001000000000000001000000000000000");
+  processMessage("192.168.1.3", "10000001000000000000001000000000000000");
+  processMessage("192.168.1.4", "10000001000000000000001000000000000000");
+  processMessage("192.168.1.5", "10000001000000000000001000000000000000");
+}
+
+void initNetworking()
+{
+  println("Controller: Initializing Network.");
   //Configure network.
-  //udp = new UDP( this, 5400 );
-  udp = new UDP( this, 5400, "192.168.1.100" );
+  udp = new UDP( this, 6000);
   //udp.log( true );     // <-- printout the connection activity
   udp.listen( true );
   
+  println("Controller: Initializing Network. Done.");
+}
+
+void initDisplay()
+{
+  println("Controller: Initializing Display Parameters.");
   size(900, 600, P3D);
   colorMode(HSB, 100);
+
+  grid = new PegGrid(this, "127.0.0.1", 7890);
   
-  grid = new PegGrid(this, 7890);
- 
-  //Test receiving a message.
-  processMessage("192.168.1.4", "10000001000000000000001000000000000000");
-  
+  println("Controller: Initializing Display Parameters. Done.");
+}
+
+void loadImages()
+{
+  println("Controller: Loading Images.");
   //Image loading
   String path = "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/images";
-  println("path: " + path);
+  println("\tpath: " + path);
   String[] filenames = listFileNames(path);
   printArray(filenames);
-  
-   imgs = new PImage[filenames.length];
-   for (int i = 0; i < filenames.length; i++) {
+
+  imgs = new PImage[filenames.length];
+  for (int i = 0; i < filenames.length; i++) {
     imgs[i] = loadImage(path+"/"+filenames[i]);
   }
+  println("Controller: Loading Images. Done.");
 }
 
-String[] listFileNames(String dir) {
-   File file = new File(dir);
-   if (file.isDirectory()) {
-     String names[] = file.list();
-     return names;
-   } else {
-     return null;
-   }
-}
-
-void nextImage()
+void draw()
 {
-  currentImg++;
-  if(currentImg >= imgs.length){
-    currentImg = -1; 
+  background(0);
+  grid.draw();
+
+
+  //We only want to draw the image to the screen once to load the image data into
+  //the pegs. That way the image can be changed by clicking a peg.
+  if (currentImg != -1 && !hasDrawn) {
+    imageMode(CENTER);
+    image(imgs[currentImg], width/2, height/2, width/1.25, height/1.25);
+    hasDrawn = true;
+    grid.loadImg();
   }
-  hasDrawn = false;
 }
 
+// ****************************************
+// ****************************************
+//        Input Handlers
+// ****************************************
+// ****************************************
 void mousePressed()
 { 
   grid.mousePressed(mouseX, mouseY);
@@ -83,48 +109,36 @@ void keyPressed()
 {
   switch(key)
   {
-    case 'c':
-      grid.setAllOff();
-      break;
-    case 'r':
-      grid.setAll(Colors.RED);
-      break;
-    case 'g':
-      grid.setAll(Colors.GREEN);
-      break;
-    case 'b':
-      grid.setAll(Colors.BLUE);
-      break;
-    case 'w':
-      grid.setAll(Colors.WHITE);
-      break;
-    case 'q':
-      grid.setAllRandom();
-      break;
-    case 'n':
-      nextImage();
-    default:
-      break;
+  case 'c':
+    grid.setAllOff();
+    break;
+  case 'r':
+    grid.setAll(Colors.RED);
+    break;
+  case 'g':
+    grid.setAll(Colors.GREEN);
+    break;
+  case 'b':
+    grid.setAll(Colors.BLUE);
+    break;
+  case 'w':
+    grid.setAll(Colors.WHITE);
+    break;
+  case 'q':
+    grid.setAllRandom();
+    break;
+  case 'n':
+    nextImage();
+  default:
+    break;
   }
 }
 
-void draw()
-{
-  background(0);
-  grid.draw();
-  
-  
-  //We only want to draw the image to the screen once to load the image data into
-  //the pegs. That way the image can be changed by clicking a peg.
-  if(currentImg != -1 && !hasDrawn){
-    imageMode(CENTER);
-    image(imgs[currentImg],width/2, height/2,width/1.25, height/1.25);
-    hasDrawn = true;
-    grid.loadImg();
-  }
-  
-}
-
+// ****************************************
+// ****************************************
+//        Network Methods
+// ****************************************
+// ****************************************
 
 /**
  * To perform any action on datagram reception, you need to implement this 
@@ -141,10 +155,10 @@ void receive( byte[] data, String ip, int port )  // <-- extended handler
   // forget the ";\n" at the end <-- !!! only for a communication with Pd !!!
   data = subset(data, 0, data.length-1);
   String message = new String( data );
-  
+
   // print the result
   println( "receive: \""+message+"\" from "+ip+" on port "+port );
-    
+
   processMessage(ip, message);
 }
 
@@ -152,16 +166,40 @@ void receive( byte[] data, String ip, int port )  // <-- extended handler
 void processMessage(String ip, String message)
 {
   String ystr = ip.substring(ip.lastIndexOf('.')+1, ip.length());
-  int yidx = Integer.parseInt(ystr);
-  println("yidx: " + yidx);
-  
+  int yidx = Integer.parseInt(ystr) - 1; //Change IP range to start at 1. 
+  //println("yidx: " + yidx);
+
   message = message.trim();
-  
-  for(int x = 0; x < message.length(); x++)
+
+  //TODO Was using message.length, make sure that using the GRID_W works.
+  for (int x = 0; x < GRID_W; x++)
   {
-    if(Integer.parseInt(String.valueOf(message.charAt(x))) == 1){
+    if (Integer.parseInt(String.valueOf(message.charAt(x))) == 1) {
       grid.nextColorAtCoord(x, yidx);
-    } 
+    }
   }
-  
+}
+
+// ****************************************
+// ****************************************
+//        Image Methods
+// ****************************************
+// ****************************************
+String[] listFileNames(String dir) {
+  File file = new File(dir);
+  if (file.isDirectory()) {
+    String names[] = file.list();
+    return names;
+  } else {
+    return null;
+  }
+}
+
+void nextImage()
+{
+  currentImg++;
+  if (currentImg >= imgs.length) {
+    currentImg = -1;
+  }
+  hasDrawn = false;
 }

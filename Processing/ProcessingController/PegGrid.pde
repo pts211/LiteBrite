@@ -8,17 +8,19 @@ public class PegGrid
   
   PApplet parent;
   OPC opc;
-  int port;
+  String ip;
+  int port = 7890;
   
   Peg[] pegs = new Peg[GRID_W*GRID_H];
   
-  PegGrid(PApplet parent, int port){
+  PegGrid(PApplet parent, String ip, int port){
     this.parent = parent;
+    this.ip = ip;
     this.port = port;
     
     //parent.registerDraw(this);
     
-    opc = new OPC(parent, "127.0.0.1", 7890);
+    opc = new OPC(parent, ip, port);
     opc.showLocations(true);
     
     generateGrid();
@@ -26,7 +28,7 @@ public class PegGrid
     for (int i = 0; i < pegs.length; i++) {
         Point p = opc.getLocationByIndex(i);
         pegs[i] = new Peg(p);
-        println("peg[" + i + "]: ( " + pegs[i].getX() + ", " + pegs[i].getY() + " )");
+        //println("peg[" + i + "]: ( " + pegs[i].getX() + ", " + pegs[i].getY() + " )");
     }
   }
   
@@ -146,8 +148,10 @@ public class PegGrid
   
   public int getIndexAtPoint(int x, int y)
   {
+    println("getting point at ( " + x + ", " + y + ")");
     if( (x < GRID_W) && (y < GRID_H) ){
-      return x + GRID_W * y;
+      return (((y % 2) == 1)? (GRID_W -1 - x) : x) + GRID_W * y;
+      
     }
     return -1;
   }

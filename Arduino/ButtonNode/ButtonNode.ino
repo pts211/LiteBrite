@@ -5,7 +5,7 @@
  * will have an arduino per row. Each arduino is responsible for monitoring button input from 38 buttons and passing
  * the data on to the main controller over UDP.
  * 
- * The IP of each Arduino should represent the row that they are positioned on the LiteBrite, starting from the top at 0.
+ * The IP of each Arduino should represent the row that they are positioned on the LiteBrite, starting from the top at 1.
  * The MAC address should be unique for each Arduino.
  * The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
  */
