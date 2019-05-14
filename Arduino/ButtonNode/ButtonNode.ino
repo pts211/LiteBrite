@@ -1,3 +1,16 @@
+/* ButtonNode.ino
+ * Author: Paul Sites (paul.sites@cerner.com)
+ * 
+ * This ButtonNode is part of the LiteBrite project, created for DevCon2019. The LiteBrite, slotted to have 24 rows, 
+ * will have an arduino per row. Each arduino is responsible for monitoring button input from 38 buttons and passing
+ * the data on to the main controller over UDP.
+ * 
+ * The IP of each Arduino should represent the row that they are positioned on the LiteBrite, starting from the top at 0.
+ * The MAC address should be unique for each Arduino.
+ * The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
+ * 
+ */
+
 #include <EtherCard.h>
 
 // ****************************************
@@ -9,12 +22,15 @@
 static byte mymac[] = { 0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F };
 static byte myip[] = { 192, 168, 1, 2 };
 
-static byte srip[] = { 192, 168, 1, 125 }; // destination IP
-static byte gwip[] = { 192, 168, 1, 1 };
-//static byte dns[]  = { 192,168,1,1 };
+static byte srip[] = { 192, 168, 1, 100 }; // destination IP
+static byte gwip[] = { 192, 168, 1, 100 };
+static byte dns[]  = { 192, 168, 1, 100 };
+static byte mask[] = { 255, 255, 255, 0 }; //REQUIRED. Otherwise the DST MAC won't be specified.
 
 const int dstPort PROGMEM = 6000;
 const int srcPort PROGMEM = 6000;
+
+const bool useDHCP PROGMEM = false;
 
 byte Ethernet::buffer[700];
 static uint32_t timer;
@@ -52,33 +68,41 @@ BYTES_VAL_T oldPinValues;
 void setup () {
   Serial.begin(9600);
 
+  Serial.println("ButtonNode: Starting...");
+
   initNetworking();
   initShiftRegisters();
 }
 
 void initNetworking()
 {
+  Serial.println("ButtonNode: Initializing Network.");
   if (ether.begin(sizeof Ethernet::buffer, mymac, SS) == 0) {
     Serial.println( "Failed to access Ethernet controller");
   }
 
 
-  if (!ether.dhcpSetup()) {
-    Serial.println("DHCP failed. Setting static ip.");
-    ether.staticSetup(myip, gwip);
+  if (!useDHCP || !ether.dhcpSetup()) { 
+    if(useDHCP){
+      Serial.println("DHCP failed. Setting static ip."); 
+    }
+    ether.staticSetup(myip, gwip, dns, mask);
   }
 
   ether.printIp("IP:  ", ether.myip);
   ether.printIp("GW:  ", ether.gwip);
-  //ether.printIp("DNS: ", ether.dnsip);
+  ether.printIp("DNS: ", ether.dnsip);
 
   //if (!ether.dnsLookup(website))
   //  Serial.println("DNS failed");
   //ether.printIp("SRV: ", ether.hisip);
+
+  Serial.println("");
 }
 
 void initShiftRegisters()
 {
+  Serial.println("ButtonNode: Initializing Buttons.");
   // Initialize our digital pins
   pinMode(ploadPin, OUTPUT);
   pinMode(clockEnablePin, OUTPUT);
@@ -92,6 +116,8 @@ void initShiftRegisters()
   pinValues = read_shift_regs();
   oldPinValues = pinValues;
   oldDeltaPinValues = deltaPinValues;
+
+  Serial.println("");
 }
 
 //char textToSend[] = "01010101010101010101010101010101010101";
@@ -100,6 +126,9 @@ char textToSend[DATA_WIDTH];
 void loop () {
   // Read the state of all zones.
   pinValues = read_shift_regs();
+
+  //REQUIRED. Handles low level network responses. Part of the MAC address fix.
+  ether.packetLoop(ether.packetReceive());
 
 
   /*  
@@ -182,6 +211,18 @@ void loop () {
     ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );
 
     oldPinValues = pinValues;
+  }
+  */
+  /*
+  //TODO DEBUG Helpful for checking that packets are making it to their destination.
+  if (millis() > timer) {
+      timer = millis() + 4000;
+
+      Serial.print("Sending to server at: ");
+      Serial.println(ipToString(srip));
+
+     //static void sendUdp (char *data,uint8_t len,uint16_t sport, uint8_t *dip, uint16_t dport);
+     ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );
   }
   */
 
