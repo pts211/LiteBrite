@@ -4,9 +4,15 @@
  *
  * This is software used to control the LiteBrite created for DevCon 2019.
  */
+ 
+//Display Size 
+final int SCREEN_WIDTH = 900;
+
+final float ASPECT_RATIO = float(PegGrid.GRID_W)/float(PegGrid.GRID_H);
 
 // import UDP library
 import hypermedia.net.*;
+import gifAnimation.*;
 
 PegGrid grid;
 
@@ -16,22 +22,38 @@ OPC opc;
 PImage texture;
 PImage dot;
 
-final int GRID_W = 38;
-final int GRID_H = 24;
 
-Peg[] pegs = new Peg[GRID_W*GRID_H];
+boolean clearTransisition = false;
+AnimatedTransistion pac;
+Gif pacman;
+
+AnimatedTransistion blink;
+Gif blinky;
+
+
+PGraphics offScreen;
+
 
 //Image loading
-
 int currentImg = -1;
 boolean hasDrawn = false;
 PImage[] imgs;
 
 void setup()
 {
-  initNetworking();
+  frameRate(30);
+ 
   initDisplay();  
   loadImages();
+  
+  pacman = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/pacman-animation-crop-tail.gif");
+  pac = new AnimatedTransistion(pacman, 2, false);
+  
+  blinky = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
+  blink = new AnimatedTransistion(blinky, 2, true);
+  
+  // TODO Off screen graphics
+  offScreen = createGraphics(27, 30);
 
   //Test receiving a message.
   processMessage("192.168.1.1", "10000001000000000000001000000000000000");
@@ -55,7 +77,7 @@ void initNetworking()
 void initDisplay()
 {
   println("Controller: Initializing Display Parameters.");
-  size(900, 600, P3D);
+  size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D);
   colorMode(HSB, 100);
 
   grid = new PegGrid(this, "127.0.0.1", 7890);
@@ -83,13 +105,32 @@ void draw()
 {
   background(0);
   grid.draw();
-
-
+  
+  if(pac.isPlaying()){
+    pac.draw();
+    grid.loadImg();
+  }
+  
+  if(blink.isPlaying()){
+    blink.draw();
+    grid.loadImg();
+  }
+  
   //We only want to draw the image to the screen once to load the image data into
   //the pegs. That way the image can be changed by clicking a peg.
   if (currentImg != -1 && !hasDrawn) {
+    
+    //If we load a saved LiteBrite image then we don't ant to scale it.
+    PImage img = imgs[currentImg];
+    float img_aspect = float(img.width)/float(img.height);
+    img.resize(width, height);
+    /*
+    if(img_aspect != ASPECT_RATIO){
+      img.resize(width, height);
+    }
+    */
     imageMode(CENTER);
-    image(imgs[currentImg], width/2, height/2, width/1.25, height/1.25);
+    image(img, width/2, height/2);
     hasDrawn = true;
     grid.loadImg();
   }
@@ -110,7 +151,10 @@ void keyPressed()
   switch(key)
   {
   case 'c':
-    grid.setAllOff();
+    pac.start();
+    break;
+  case 'C':
+    blink.start();
     break;
   case 'r':
     grid.setAll(Colors.RED);
@@ -129,6 +173,11 @@ void keyPressed()
     break;
   case 'n':
     nextImage();
+    break;
+  case 'S':  
+    saveFrame();
+    println("Saving image.");
+    break;
   default:
     break;
   }
@@ -172,7 +221,7 @@ void processMessage(String ip, String message)
   message = message.trim();
 
   //TODO Was using message.length, make sure that using the GRID_W works.
-  for (int x = 0; x < GRID_W; x++)
+  for (int x = 0; x < PegGrid.GRID_W; x++)
   {
     if (Integer.parseInt(String.valueOf(message.charAt(x))) == 1) {
       grid.nextColorAtCoord(x, yidx);

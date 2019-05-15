@@ -1,13 +1,19 @@
 public class Peg
 {
   
-  final static int DIAMETER = 20;
+  int DIAMETER = 20;
   Point p;
   color c;
   
   Peg(Point p){
     this.p = p;
     this.c = Colors.BLACK;
+  }
+  
+  Peg(Point p, int dia){
+    this.p = p;
+    this.c = Colors.BLACK;
+    this.DIAMETER = dia;
   }
   
   Point getPoint()

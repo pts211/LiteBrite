@@ -4,11 +4,11 @@ public class PegGrid
   final static int GRID_W = 38;
   final static int GRID_H = 24;
   
-  final static int DIAMETER = 20;
+  final int DIAMETER = width/GRID_W;
   
   PApplet parent;
   OPC opc;
-  String ip;
+  String ip = "127.0.0.1";
   int port = 7890;
   
   Peg[] pegs = new Peg[GRID_W*GRID_H];
@@ -21,13 +21,13 @@ public class PegGrid
     //parent.registerDraw(this);
     
     opc = new OPC(parent, ip, port);
-    opc.showLocations(true);
+    opc.showLocations(false);
     
     generateGrid();
     
     for (int i = 0; i < pegs.length; i++) {
         Point p = opc.getLocationByIndex(i);
-        pegs[i] = new Peg(p);
+        pegs[i] = new Peg(p, int(DIAMETER*0.9));
         //println("peg[" + i + "]: ( " + pegs[i].getX() + ", " + pegs[i].getY() + " )");
     }
   }
@@ -39,8 +39,8 @@ public class PegGrid
     int numStrips = GRID_H;
     float x = width/2.0;
     float y = height/2.0;
-    float ledSpacing = 20.0;
-    float stripSpacing = 20.0 ;
+    float ledSpacing = DIAMETER;
+    float stripSpacing = DIAMETER;
     float angle = 0;
     boolean zigzag = true;
     
@@ -108,6 +108,34 @@ public class PegGrid
     }
     updatePixels();
   }
+  /*
+  public void saveImg()
+  {
+    loadPixels();
+    
+    for (int i = 0; i < pegs.length; i++) {
+        int pixelLocation = opc.getLocationByIndexAsInt(i);
+        int pixel = pixels[pixelLocation];
+        pegs[i].setColor(pixel);
+    }
+    updatePixels();
+  }
+  */
+  /*
+  //TODO REMOVE - Testing loading an image into an off-screen object to prevent
+  //possible flickering. 
+  public void loadImg(PImage img)
+  {
+    img.loadPixels();
+    
+    for (int i = 0; i < pegs.length; i++) {
+        int pixelLocation = opc.getLocationByIndexAsInt(i);
+        int pixel = img.pixels[pixelLocation];
+        pegs[i].setColor(pixel);
+    }
+    img.updatePixels();
+  }
+  */
   
   public void draw()
   {
@@ -122,9 +150,10 @@ public class PegGrid
     for (int i = 0; i < pegs.length; i++) {
       Point pP = pegs[i].getPoint();
       
-      if(containmentCheck(mP, pP, Peg.DIAMETER/2)){
+      if(containmentCheck(mP, pP, DIAMETER/2)){
         println("Clicked peg " + i + "."); 
         pegs[i].nextColor();
+        break;
       }
     }
   }
@@ -148,7 +177,7 @@ public class PegGrid
   
   public int getIndexAtPoint(int x, int y)
   {
-    println("getting point at ( " + x + ", " + y + ")");
+    //println("getting point at ( " + x + ", " + y + ")");
     if( (x < GRID_W) && (y < GRID_H) ){
       return (((y % 2) == 1)? (GRID_W -1 - x) : x) + GRID_W * y;
       
