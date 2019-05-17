@@ -27,7 +27,7 @@ public class AnimatedTransistion
     
     totalDist = Math.abs(startPos) + width;
     
-    println("total distance is:" + totalDist);
+    //println("total distance is:" + totalDist);
     
   }
   

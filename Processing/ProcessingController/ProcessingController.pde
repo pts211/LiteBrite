@@ -4,11 +4,12 @@
  *
  * This is software used to control the LiteBrite created for DevCon 2019.
  */
- 
 //Display Size 
 final int SCREEN_WIDTH = 900;
-
 final float ASPECT_RATIO = float(PegGrid.GRID_W)/float(PegGrid.GRID_H);
+
+//Port to listen to for button presses.
+final int INPUT_PORT = 6000;
 
 // import UDP library
 import hypermedia.net.*;
@@ -16,61 +17,59 @@ import gifAnimation.*;
 
 PegGrid grid;
 
-UDP udp;  // define the UDP object
+UDP udp;  // Receive button presses over UDP.
+OPC opc;  // Connect to FadeCandy lights via OPC.
 
-OPC opc;
-PImage texture;
-PImage dot;
-
-
-boolean clearTransisition = false;
+//Store a few default transistions.
 AnimatedTransistion pac;
 Gif pacman;
-
 AnimatedTransistion blink;
 Gif blinky;
-
-
-PGraphics offScreen;
-
 
 //Image loading
 int currentImg = -1;
 boolean hasDrawn = false;
 PImage[] imgs;
 
+//UserScreen userScreen;
 void setup()
 {
+  size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
+  colorMode(HSB, 100);
   frameRate(30);
- 
-  initDisplay();  
+  println("Controller: Initializing Display Parameters. Done.");
+
+  grid = new PegGrid(this, "127.0.0.1", 7890);
+  
+  initNetworking();
   loadImages();
   
   pacman = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/pacman-animation-crop-tail.gif");
-  pac = new AnimatedTransistion(pacman, 2, false);
-  
+  pac = new AnimatedTransistion(pacman, 3, false);
+
   blinky = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
-  blink = new AnimatedTransistion(blinky, 2, true);
-  
-  // TODO Off screen graphics
-  offScreen = createGraphics(27, 30);
+  blink = new AnimatedTransistion(blinky, 3, true);
 
   //Test receiving a message.
+  /*
   processMessage("192.168.1.1", "10000001000000000000001000000000000000");
   processMessage("192.168.1.2", "10000001000000000000001000000000000000");
   processMessage("192.168.1.3", "10000001000000000000001000000000000000");
   processMessage("192.168.1.4", "10000001000000000000001000000000000000");
   processMessage("192.168.1.5", "10000001000000000000001000000000000000");
+  */
+  
+  //userScreen = new UserScreen();
 }
 
 void initNetworking()
 {
   println("Controller: Initializing Network.");
   //Configure network.
-  udp = new UDP( this, 6000);
-  //udp.log( true );     // <-- printout the connection activity
+  udp = new UDP( this, INPUT_PORT);
+  udp.log( true );     // <-- printout the connection activity
   udp.listen( true );
-  
+
   println("Controller: Initializing Network. Done.");
 }
 
@@ -81,7 +80,7 @@ void initDisplay()
   colorMode(HSB, 100);
 
   grid = new PegGrid(this, "127.0.0.1", 7890);
-  
+
   println("Controller: Initializing Display Parameters. Done.");
 }
 
@@ -105,30 +104,26 @@ void draw()
 {
   background(0);
   grid.draw();
-  
-  if(pac.isPlaying()){
+
+  if (pac.isPlaying()) {
     pac.draw();
     grid.loadImg();
   }
-  
-  if(blink.isPlaying()){
+
+  if (blink.isPlaying()) {
     blink.draw();
     grid.loadImg();
   }
-  
+
   //We only want to draw the image to the screen once to load the image data into
   //the pegs. That way the image can be changed by clicking a peg.
   if (currentImg != -1 && !hasDrawn) {
-    
+
     //If we load a saved LiteBrite image then we don't ant to scale it.
     PImage img = imgs[currentImg];
     float img_aspect = float(img.width)/float(img.height);
     img.resize(width, height);
-    /*
-    if(img_aspect != ASPECT_RATIO){
-      img.resize(width, height);
-    }
-    */
+    
     imageMode(CENTER);
     image(img, width/2, height/2);
     hasDrawn = true;
@@ -211,7 +206,6 @@ void receive( byte[] data, String ip, int port )  // <-- extended handler
   processMessage(ip, message);
 }
 
-
 void processMessage(String ip, String message)
 {
   String ystr = ip.substring(ip.lastIndexOf('.')+1, ip.length());
@@ -252,3 +246,4 @@ void nextImage()
   }
   hasDrawn = false;
 }
+

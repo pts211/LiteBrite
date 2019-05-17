@@ -1,16 +1,16 @@
 /* ButtonNode.ino
- * Author: Paul Sites (paul.sites@cerner.com)
- * 
- * This ButtonNode is part of the LiteBrite project, created for DevCon 2019. The LiteBrite, slotted to have 24 rows, 
- * will have an arduino per row. Each arduino is responsible for monitoring button input from 38 buttons and passing
- * the data on to the main controller over UDP.
- * 
- * The IP of each Arduino should represent the row that they are positioned on the LiteBrite, starting from the top at 1.
- * The MAC address should be unique for each Arduino.
- * The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
- */
- 
-#define ROW_NUMBER   2
+   Author: Paul Sites (paul.sites@cerner.com)
+
+   This ButtonNode is part of the LiteBrite project, created for DevCon 2019. The LiteBrite, slotted to have 24 rows,
+   will have an arduino per row. Each arduino is responsible for monitoring button input from 38 buttons and passing
+   the data on to the main controller over UDP.
+
+   The IP of each Arduino should represent the row that they are positioned on the LiteBrite, starting from the top at 1.
+   The MAC address should be unique for each Arduino.
+   The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
+*/
+
+#define ROW_NUMBER   1
 //The ROW_NUMBER will automatically configure the correct IP and unique MAC address.
 
 
@@ -25,7 +25,8 @@
 static byte mymac[] = { 0x1A, 0x2B, 0x3C, 0x4D, 0x5E, ROW_NUMBER };
 static byte myip[] = { 192, 168, 1, ROW_NUMBER };
 
-static byte srip[] = { 192, 168, 1, 100 }; // destination IP
+//static byte srip[] = { 192, 168, 1, 100 }; // destination IP
+static byte srip[] = { 255, 255, 255, 255 }; // destination IP
 static byte gwip[] = { 192, 168, 1, 100 };
 static byte dns[]  = { 192, 168, 1, 100 };
 static byte mask[] = { 255, 255, 255, 0 }; //REQUIRED. Otherwise the DST MAC won't be specified.
@@ -86,9 +87,9 @@ void initNetworking()
     Serial.println( "Failed to access Ethernet controller");
   }
 
-  if (!useDHCP || !ether.dhcpSetup()) { 
-    if(useDHCP){
-      Serial.println("DHCP failed. Setting static ip."); 
+  if (!useDHCP || !ether.dhcpSetup()) {
+    if (useDHCP) {
+      Serial.println("DHCP failed. Setting static ip.");
     }
     ether.staticSetup(myip, gwip, dns, mask);
   }
@@ -134,36 +135,36 @@ void loop () {
   ether.packetLoop(ether.packetReceive());
 
 
-  /*  
-   * Since it is possible that multiple buttons in the same row could be pressed
-   * at the same time - more specifically, a new button could be pressed while another butting
-   * was already pressed - it is important to only send the change, delta, of the button states over
-   * the network. 
-   * 
-   * To do this we will only care when a button transistions from 0->1, ignoring when the button is released.
-   * 
-   * We want to avoid:
-   * Frame 1: 00000000000000000000000000000000000001
-   * Frame 2: 00000000000000000000000000000000000101
-   * and instead send:
-   * Frame 1: 00000000000000000000000000000000000001
-   * Frame 2: 00000000000000000000000000000000000100
-   * In both scenarios, two buttons are pressed in Frame 2.
-   * 
-   */
   /*
-   * If I XOR previousVals and currentVals, then AND result and currentVals we will get ony the change to a pressed state.
-   * Threw a little demo sketch together to verify. https://code.sololearn.com/c40x3N2NWcIr/#py
-   */
+     Since it is possible that multiple buttons in the same row could be pressed
+     at the same time - more specifically, a new button could be pressed while another butting
+     was already pressed - it is important to only send the change, delta, of the button states over
+     the network.
+
+     To do this we will only care when a button transistions from 0->1, ignoring when the button is released.
+
+     We want to avoid:
+     Frame 1: 00000000000000000000000000000000000001
+     Frame 2: 00000000000000000000000000000000000101
+     and instead send:
+     Frame 1: 00000000000000000000000000000000000001
+     Frame 2: 00000000000000000000000000000000000100
+     In both scenarios, two buttons are pressed in Frame 2.
+
+  */
+  /*
+     If I XOR previousVals and currentVals, then AND result and currentVals we will get ony the change to a pressed state.
+     Threw a little demo sketch together to verify. https://code.sololearn.com/c40x3N2NWcIr/#py
+  */
   tempPinValues = pinValues ^ oldPinValues;  // XOR the old and new
   deltaPinValues = tempPinValues & pinValues;// AND the new and xor'd value to get only the changes to 1's.
 
   /*
-  // TODO REMOVE This should be UNNEEDED thanks to bitwise operators. Keeping around just in case I need a backup.
-  long currentBitVal;
-  long previousBitVal;
-  for (int i = 0; i < DATA_WIDTH; i++)
-  {
+    // TODO REMOVE This should be UNNEEDED thanks to bitwise operators. Keeping around just in case I need a backup.
+    long currentBitVal;
+    long previousBitVal;
+    for (int i = 0; i < DATA_WIDTH; i++)
+    {
     currentBitVal = (pinValues >> i);
     previousBitVal = (oldPinValues >> i);
 
@@ -173,39 +174,47 @@ void loop () {
     else if( (currentBitVal != previousBitVal) && currentBitVal){
       deltaPinValues |= (1 << ((DATA_WIDTH - 1) - i));
     }
-  }
+    }
   */
 
-  if(deltaPinValues != oldDeltaPinValues)
+/*
+  String pinValsStr = create_pin_values_string(pinValues);
+  String deltaPinValsStr = create_pin_values_string(deltaPinValues);
+  String oldDeltaPinValsStr = create_pin_values_string(oldDeltaPinValues);
+  Serial.println("pins:      " + pinValsStr);
+  Serial.println("delVal:    " + deltaPinValsStr);
+  Serial.println("oldDelVal: " + oldDeltaPinValsStr);
+*/
+
+  if (deltaPinValues != oldDeltaPinValues)
   {
-    String pinValsStr = create_pin_values_string(pinValues);
-    String deltaPinValsStr = create_pin_values_string(deltaPinValues);
-
-    Serial.print("Pin value change detected: \r\n pinVal: ");
-    Serial.println(pinValsStr);
-    Serial.print("delVal: ");
-    Serial.println(deltaPinValsStr);
-
     //We only want to broadcast data out if we are on a rising edge of a change.
     //Make sure that we are sending a toggle.
-    if(deltaPinValsStr.indexOf('1') >= 0){
+
+    String deltaPinValsStr = create_pin_values_string(deltaPinValues);
+    if (deltaPinValsStr.indexOf('1') >= 0) {
+      Serial.print("SIGNIFICANT");
       deltaPinValsStr.toCharArray(textToSend, DATA_WIDTH);
-      ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );  
+      ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );
+    } else
+    {
+      Serial.print("INSIGNIFICANT");
     }
-    
+    Serial.println(" change detected.");
+
     oldPinValues = pinValues;
     oldDeltaPinValues = deltaPinValues;
   }
 
 
-
   // If there was a chage in state, display which ones changed.
-  /*
+
   //TODO REMOVE This is the old logic that broadcasts all state changes. Removal pending
   //testing of new methods.
+
   if (pinValues != oldPinValues)
   {
-    String pinValsStr = create_pin_values_string();
+    String pinValsStr = create_pin_values_string(pinValues);
 
     Serial.print("Pin value change detected: ");
     Serial.println(pinValsStr);
@@ -215,10 +224,10 @@ void loop () {
 
     oldPinValues = pinValues;
   }
-  */
+
   /*
-  //TODO DEBUG Helpful for checking that packets are making it to their destination.
-  if (millis() > timer) {
+    //TODO DEBUG Helpful for checking that packets are making it to their destination.
+    if (millis() > timer) {
       timer = millis() + 4000;
 
       Serial.print("Sending to server at: ");
@@ -226,10 +235,11 @@ void loop () {
 
      //static void sendUdp (char *data,uint8_t len,uint16_t sport, uint8_t *dip, uint16_t dport);
      ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );
-  }
+    }
   */
 
   delay(POLL_DELAY_MSEC);
+
 }
 
 // ****************************************
@@ -283,35 +293,16 @@ BYTES_VAL_T read_shift_regs()
 }
 
 String tempStr = "";
-
 String create_pin_values_string(BYTES_VAL_T values)
 {
   tempStr = "";
   for (int i = 0; i < DATA_WIDTH; i++)
   {
     //Test simplifying.
-    tempStr += (values >> i);
+    tempStr += ((values >> i) & 1) ? "1" : "0";
   }
   return tempStr;
 }
-
-/*
-String create_pin_values_string()
-{
-  tempStr = "";
-  for (int i = 0; i < DATA_WIDTH; i++)
-  {
-     // if((pinValues >> i) & 1){
-     //   temp += "1";
-     // }
-     // else {
-     //   temp += "0";
-     // }
-    
-  }
-  return tempStr;
-}
-*/
 
 void display_pin_values()
 {
