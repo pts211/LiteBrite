@@ -31,6 +31,9 @@ int currentImg = -1;
 boolean hasDrawn = false;
 PImage[] imgs;
 
+//Ripples
+RippleGenerator ripGen;
+
 //UserScreen userScreen;
 void setup()
 {
@@ -60,6 +63,9 @@ void setup()
   */
   
   //userScreen = new UserScreen();
+  
+  //Ripples
+  ripGen = new RippleGenerator(400);
 }
 
 void initNetworking()
@@ -129,6 +135,7 @@ void draw()
     hasDrawn = true;
     grid.loadImg();
   }
+  ripGen.draw();
 }
 
 // ****************************************
@@ -138,7 +145,10 @@ void draw()
 // ****************************************
 void mousePressed()
 { 
-  grid.mousePressed(mouseX, mouseY);
+  Peg peg = grid.mousePressed(mouseX, mouseY);
+  if(peg != null){
+    ripGen.addRipple(peg.getPoint(), peg.getColor()); 
+  }
 }
 
 void keyPressed()

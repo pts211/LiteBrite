@@ -31,6 +31,19 @@ int currentImg = -1;
 boolean hasDrawn = false;
 PImage[] imgs;
 
+
+//Ripples
+int cols;
+int rows;
+float[][] current;// = new float[cols][rows];
+float[][] previous;// = new float[cols][rows];
+
+int dropsize = 50;
+float flow = 20;
+float dampening = 0.999;
+int speed = 4;
+
+
 //UserScreen userScreen;
 void setup()
 {
@@ -60,6 +73,12 @@ void setup()
   */
   
   //userScreen = new UserScreen();
+  
+  //Ripples
+  cols = width;
+  rows = height;
+  current = new float[cols][rows];
+  previous = new float[cols][rows];
 }
 
 void initNetworking()
@@ -129,6 +148,9 @@ void draw()
     hasDrawn = true;
     grid.loadImg();
   }
+  processRipple();
+  
+  println("fps: " + frameRate);
 }
 
 // ****************************************
@@ -139,6 +161,8 @@ void draw()
 void mousePressed()
 { 
   grid.mousePressed(mouseX, mouseY);
+  
+  previous[mouseX][mouseY] = 40 * dropsize;
 }
 
 void keyPressed()
@@ -247,3 +271,32 @@ void nextImage()
   hasDrawn = false;
 }
 
+float dampening(float flow) {
+  return (1 / (1 + pow((float)Math.E, -(flow/5))));
+}
+
+void processRipple()
+{
+  
+  for (int s = 1; s <= speed; s++){
+    loadPixels();
+    for (int i = 1; i < cols-1; i++) {
+      for (int j = 1; j < rows-1; j++) {
+        current[i][j] = (
+          previous[i-1][j] + 
+          previous[i+1][j] +
+          previous[i][j-1] + 
+          previous[i][j+1]) / 2 -
+          current[i][j];
+        current[i][j] *= dampening(flow);
+        int index = i + j * cols;
+        pixels[index] = color(current[i][j]);
+      }
+    }
+    updatePixels();
+    float[][] temp = previous;
+    previous = current;
+    current = temp;
+  }
+   
+}

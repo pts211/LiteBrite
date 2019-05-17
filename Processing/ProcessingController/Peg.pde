@@ -31,6 +31,11 @@ public class Peg
     return this.p.getY(); 
   }
   
+  color getColor()
+  {
+    return this.c;
+  }
+  
   void setColor(color c)
   {
     this.c = c; 

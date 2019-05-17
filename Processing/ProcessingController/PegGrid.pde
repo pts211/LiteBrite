@@ -144,7 +144,7 @@ public class PegGrid
     }
   }
   
-  public void mousePressed(int xpos, int ypos)
+  public Peg mousePressed(int xpos, int ypos)
   { 
     Point mP = new Point(mouseX, mouseY);
     for (int i = 0; i < pegs.length; i++) {
@@ -153,9 +153,10 @@ public class PegGrid
       if(containmentCheck(mP, pP, DIAMETER/2)){
         println("Clicked peg " + i + "."); 
         pegs[i].nextColor();
-        break;
+        return pegs[i];
       }
     }
+    return null;
   }
   
   private boolean containmentCheck(Point p1, Point p2, int radius)
