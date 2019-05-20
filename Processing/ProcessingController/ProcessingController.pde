@@ -147,7 +147,7 @@ void mousePressed()
 { 
   Peg peg = grid.mousePressed(mouseX, mouseY);
   if(peg != null){
-    ripGen.addRipple(peg.getPoint(), peg.getColor()); 
+    //ripGen.addRipple(peg.getPoint(), peg.getColor()); 
   }
 }
 

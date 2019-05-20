@@ -43,11 +43,18 @@ public class PegGrid
     float stripSpacing = DIAMETER;
     float angle = 0;
     boolean zigzag = true;
+    boolean reversed = false;
     
     float s = sin(angle + HALF_PI);
     float c = cos(angle + HALF_PI);
     for (int i = 0; i < numStrips; i++) {
-      boolean reversed = ((i % 2) == 1);
+      reversed = ((i % 2) == 1); //Use if alternating every row.
+      /*
+      //Use if alternating FadeCandy's on different sides.
+      if( (i != 0) && ((i % 8) == 0) ){
+        reversed = !reversed; 
+      }
+      */
       
       if(staggered){
         opc.ledStrip(index + stripLength * i, stripLength,
