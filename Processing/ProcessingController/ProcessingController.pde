@@ -13,6 +13,11 @@ final int INPUT_PORT = 6000;
 
 Configuration config;
 
+//Desktop Display
+import java.awt.Robot;
+import java.awt.image.BufferedImage;
+import java.awt.Rectangle;
+
 // import UDP library
 import hypermedia.net.*;
 import gifAnimation.*;
@@ -40,6 +45,9 @@ PImage[] imgs;
 
 //Ripples
 RippleGenerator ripGen;
+
+//Desktop Viewer
+DesktopViewer desktop;
 
 void settings() {
   size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
@@ -78,6 +86,8 @@ void setup()
   createGUI();
   customGUI();
   config = new Configuration();
+  
+  desktop = new DesktopViewer(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO));
 }
 
 void initNetworking()
@@ -141,6 +151,9 @@ void draw()
 
   if (config.rippleEnabled) {
     ripGen.draw();
+  }
+  if (config.showDesktop) {
+    desktop.draw();
   }
 }
 

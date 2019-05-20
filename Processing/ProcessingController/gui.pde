@@ -33,6 +33,11 @@ public void bttn_saveImg_click(GButton source, GEvent event) { //_CODE_:bttn_sav
   saveFrame();
 } //_CODE_:bttn_saveImg:999764:
 
+public void cbx_desktop_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_desktop:798569:
+  println("cbx_desktop - GCheckbox >> GEvent." + event + " @ " + millis());
+  config.showDesktop = cbx_desktop.isSelected();
+} //_CODE_:cbx_desktop:798569:
+
 
 
 // Create all the GUI controls. 
@@ -62,6 +67,11 @@ public void createGUI(){
   bttn_saveImg = new GButton(settings, 20, 340, 80, 30);
   bttn_saveImg.setText("Save");
   bttn_saveImg.addEventHandler(this, "bttn_saveImg_click");
+  cbx_desktop = new GCheckbox(settings, 10, 160, 120, 20);
+  cbx_desktop.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  cbx_desktop.setText("Show Desktop");
+  cbx_desktop.setOpaque(false);
+  cbx_desktop.addEventHandler(this, "cbx_desktop_clicked");
   settings.loop();
 }
 
@@ -72,3 +82,4 @@ GLabel label_settings;
 GCheckbox cbx_ripple; 
 GButton bttn_; 
 GButton bttn_saveImg; 
+GCheckbox cbx_desktop; 
