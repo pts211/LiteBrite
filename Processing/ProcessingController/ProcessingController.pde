@@ -11,9 +11,16 @@ final float ASPECT_RATIO = float(PegGrid.GRID_W)/float(PegGrid.GRID_H);
 //Port to listen to for button presses.
 final int INPUT_PORT = 6000;
 
+Configuration config;
+
 // import UDP library
 import hypermedia.net.*;
 import gifAnimation.*;
+// Need G4P library
+import g4p_controls.*;
+// You can remove the PeasyCam import if you are not using
+// the GViewPeasyCam control or the PeasyCam library.
+import peasy.*;
 
 PegGrid grid;
 
@@ -38,44 +45,46 @@ void settings() {
   size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
 }
 
-//UserScreen userScreen;
 void setup()
 {
   colorMode(HSB, 100);
   //frameRate(30);
   println("Controller: Initializing Display Parameters. Done.");
-
   grid = new PegGrid(this, "127.0.0.1", 7890);
-  
+
   initNetworking();
   loadImages();
-  
+
   pacman = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/pacman-animation-crop-tail.gif");
   pac = new AnimatedTransistion(pacman, 3, false);
 
   blinky = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
   blink = new AnimatedTransistion(blinky, 3, true);
-  
+
   //Test receiving a message.
   /*
   processMessage("192.168.1.1", "10000001000000000000001000000000000000");
-  processMessage("192.168.1.2", "10000001000000000000001000000000000000");
-  processMessage("192.168.1.3", "10000001000000000000001000000000000000");
-  processMessage("192.168.1.4", "10000001000000000000001000000000000000");
-  processMessage("192.168.1.5", "10000001000000000000001000000000000000");
-  */
-  
+   processMessage("192.168.1.2", "10000001000000000000001000000000000000");
+   processMessage("192.168.1.3", "10000001000000000000001000000000000000");
+   processMessage("192.168.1.4", "10000001000000000000001000000000000000");
+   processMessage("192.168.1.5", "10000001000000000000001000000000000000");
+   */
+
   //userScreen = new UserScreen();
-  
+
   //Ripples
   ripGen = new RippleGenerator(400);
+
+  createGUI();
+  customGUI();
+  config = new Configuration();
 }
 
 void initNetworking()
 {
   println("Controller: Initializing Network.");
   //Configure network.
-  
+
   udp = new UDP( this, INPUT_PORT);
   udp.log( true );     // <-- printout the connection activity
   udp.listen( true );
@@ -122,14 +131,17 @@ void draw()
     PImage img = imgs[currentImg];
     float img_aspect = float(img.width)/float(img.height);
     img.resize(width, height);
-    
+
     imageMode(CENTER);
     image(img, width/2, height/2);
     hasDrawn = true;
     grid.loadImg();
   }
-  ripGen.draw();
 
+
+  if (config.rippleEnabled) {
+    ripGen.draw();
+  }
 }
 
 // ****************************************
@@ -140,8 +152,11 @@ void draw()
 void mousePressed()
 { 
   Peg peg = grid.mousePressed(mouseX, mouseY);
-  if(peg != null){
-    ripGen.addRipple(peg.getPoint(), peg.getColor()); 
+
+  if (config.rippleEnabled) {
+    if (peg != null) {
+      ripGen.addRipple(peg.getPoint(), peg.getColor());
+    }
   }
 }
 
@@ -249,4 +264,14 @@ void nextImage()
     currentImg = -1;
   }
   hasDrawn = false;
+}
+
+// ****************************************
+// ****************************************
+//        GUI Methods
+// ****************************************
+// ****************************************
+// Use this method to add additional statements
+// to customise the GUI controls
+public void customGUI() {
 }

@@ -29,7 +29,11 @@ public class AnimatedTransistion
     totalDist = Math.abs(startPos) + width;
     
     //println("total distance is:" + totalDist);
-    
+  }
+  
+  void setDuration(float duration)
+  {
+    this.duration = duration; 
   }
   
   boolean isPlaying()
