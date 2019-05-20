@@ -1,3 +1,4 @@
+
 public class AnimatedTransistion
 {
   Gif gif;
@@ -69,5 +70,4 @@ public class AnimatedTransistion
       reset(); 
     }
   }
-  
 }

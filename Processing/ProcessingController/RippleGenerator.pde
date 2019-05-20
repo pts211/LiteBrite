@@ -89,4 +89,3 @@ class Ripple //a circle with an increasing radius
     strokeWeight(1);
   }
 }
-

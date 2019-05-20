@@ -34,12 +34,15 @@ PImage[] imgs;
 //Ripples
 RippleGenerator ripGen;
 
+void settings() {
+  size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
+}
+
 //UserScreen userScreen;
 void setup()
 {
-  size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
   colorMode(HSB, 100);
-  frameRate(30);
+  //frameRate(30);
   println("Controller: Initializing Display Parameters. Done.");
 
   grid = new PegGrid(this, "127.0.0.1", 7890);
@@ -52,7 +55,7 @@ void setup()
 
   blinky = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
   blink = new AnimatedTransistion(blinky, 3, true);
-
+  
   //Test receiving a message.
   /*
   processMessage("192.168.1.1", "10000001000000000000001000000000000000");
@@ -72,22 +75,12 @@ void initNetworking()
 {
   println("Controller: Initializing Network.");
   //Configure network.
+  
   udp = new UDP( this, INPUT_PORT);
   udp.log( true );     // <-- printout the connection activity
   udp.listen( true );
-
   println("Controller: Initializing Network. Done.");
-}
-
-void initDisplay()
-{
-  println("Controller: Initializing Display Parameters.");
-  size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D);
-  colorMode(HSB, 100);
-
-  grid = new PegGrid(this, "127.0.0.1", 7890);
-
-  println("Controller: Initializing Display Parameters. Done.");
+  println("Controller: Initializing Network. Done.");
 }
 
 void loadImages()
@@ -136,6 +129,7 @@ void draw()
     grid.loadImg();
   }
   ripGen.draw();
+
 }
 
 // ****************************************
@@ -147,7 +141,7 @@ void mousePressed()
 { 
   Peg peg = grid.mousePressed(mouseX, mouseY);
   if(peg != null){
-    //ripGen.addRipple(peg.getPoint(), peg.getColor()); 
+    ripGen.addRipple(peg.getPoint(), peg.getColor()); 
   }
 }
 
@@ -256,4 +250,3 @@ void nextImage()
   }
   hasDrawn = false;
 }
-

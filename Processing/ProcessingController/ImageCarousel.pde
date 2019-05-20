@@ -81,4 +81,3 @@ class ImageCarousel {
     println("Controller: Loading Images. Done.");
   }
 }
-

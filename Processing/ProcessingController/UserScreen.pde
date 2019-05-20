@@ -56,4 +56,3 @@ class UserScreen extends PApplet {
     println("Controller: Loading Images. Done.");
   }
 }
-
