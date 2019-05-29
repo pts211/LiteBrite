@@ -15,7 +15,7 @@ LiteBrite is a project created for Cerner's DevCon 2019. It's original purpose w
   
   Cerner Associates
   - Hans Perera
-  - Max Phillip
+  - Max Phillips
   - Caitie Oder
   - ... and more!
 
