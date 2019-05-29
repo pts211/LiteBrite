@@ -55,7 +55,7 @@ static uint32_t timer;
 #define PULSE_WIDTH_USEC   5
 
 //Optional delay between shift register reads.
-#define POLL_DELAY_MSEC   1
+#define POLL_DELAY_MSEC   10      //TODO 5/29 increased from 1ms. Going to see if that helps the double hit.
 #define BYTES_VAL_T unsigned long
 
 int ploadPin        = 8;  // Connects to Parallel load pin the 165
@@ -128,11 +128,11 @@ void initShiftRegisters()
 char textToSend[DATA_WIDTH];
 
 void loop () {
-  // Read the state of all zones.
-  pinValues = read_shift_regs();
-
   //REQUIRED. Handles low level network responses. Part of the MAC address fix.
   ether.packetLoop(ether.packetReceive());
+  
+  // Read the state of all zones.
+  pinValues = read_shift_regs();
 
 
   /*
@@ -211,7 +211,7 @@ void loop () {
 
   //TODO REMOVE This is the old logic that broadcasts all state changes. Removal pending
   //testing of new methods.
-
+  /*
   if (pinValues != oldPinValues)
   {
     String pinValsStr = create_pin_values_string(pinValues);
@@ -224,7 +224,7 @@ void loop () {
 
     oldPinValues = pinValues;
   }
-
+  */
   /*
     //TODO DEBUG Helpful for checking that packets are making it to their destination.
     if (millis() > timer) {

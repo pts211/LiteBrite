@@ -1,7 +1,6 @@
 {
     "listen": ["127.0.0.1", 7890],
-    "relay": ["127.0.0.1", 7891],
-    "verbose": false,
+    "verbose": true,
 
     "color": {
         "gamma": 2.5,

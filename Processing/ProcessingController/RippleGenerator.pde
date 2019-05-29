@@ -3,23 +3,24 @@ public class RippleGenerator
   int lifespan;
 
   ArrayList<Ripple> ripples;//an arraylist of the waves emitted
-  
+
   RippleGenerator(int lifespan) {
     this.lifespan = lifespan;
-    
+
     ripples = new ArrayList<Ripple>();
   }
 
   void addRipple(Point p, color c)
   {
-    if(ripples == null){
+    if (ripples == null) {
       ripples = new ArrayList<Ripple>();
     }
-     ripples.add(new Ripple(8, p, c, lifespan)); 
+    ripples.add(new Ripple(8, p, c, lifespan));
   }
 
   void draw() {
-
+    pushMatrix();
+    pushStyle();
     for (int i = ripples.size ()-1; i>=0; i--) {
       Ripple rip = ripples.get(i);
       rip.draw();
@@ -29,17 +30,19 @@ public class RippleGenerator
       }
     }
 
-/*
+    /*
     if (cycles%(period*2)==0) {
-      println("Adding ripple.");
-      ripples.add(new Ripple(2, new Point(x, y), color(255, 255, 255), 200));
-    } else if (cycles%(period*2)==period) {
-      println("Adding ripple.");
-      ripples.add(new Ripple(2, new Point(x, y), color(0, 0, 0), 200));
-    }
-
-    cycles++;
-    */
+     println("Adding ripple.");
+     ripples.add(new Ripple(2, new Point(x, y), color(255, 255, 255), 200));
+     } else if (cycles%(period*2)==period) {
+     println("Adding ripple.");
+     ripples.add(new Ripple(2, new Point(x, y), color(0, 0, 0), 200));
+     }
+     
+     cycles++;
+     */
+    popMatrix();
+    popStyle();
   }
 }
 
@@ -72,20 +75,23 @@ class Ripple //a circle with an increasing radius
   }
 
   void draw() {
+    pushMatrix();
+    pushStyle();
     /*
     if (showOrigin) {
-      fill(0);//display and move the generator
-      ellipse(position.getX(), position.getY(), 10, 10);
-    }
-    */
-    
+     fill(0);//display and move the generator
+     ellipse(position.getX(), position.getY(), 10, 10);
+     }
+     */
+
     radius += velocity;
     strokeWeight(20);
     stroke(c);
     noFill();
 
     ellipse(position.getX(), position.getY(), radius*2, radius*2);
-    
-    strokeWeight(1);
+
+    popMatrix();
+    popStyle();
   }
 }
