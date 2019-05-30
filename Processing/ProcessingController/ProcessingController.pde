@@ -52,6 +52,9 @@ DesktopViewer desktop;
 //Loading Sequence
 LoadingBar loadingBar;
 
+//Scrolling Text
+ScrollingText title;
+
 
 void settings() {
   size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
@@ -97,6 +100,8 @@ void setup()
   
   //config.loadingSequenceEnabled = true;
   //startLoadingSequence();
+  
+  title = new ScrollingText();
 }
 
 void initNetworking()
@@ -172,7 +177,8 @@ void draw()
   if (config.rainbowEnabled) {
     rainbowCycle();
   }
-  
+  title.draw();
+
 }
 
 // ****************************************

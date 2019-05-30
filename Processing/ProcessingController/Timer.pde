@@ -1,5 +1,7 @@
 public class Timer
 {
+  boolean isEnabled = false;
+
   int ticks;
 
   int interval;
@@ -11,9 +13,29 @@ public class Timer
     this.ticks = 0;
   }
 
+  void setInterval(int interval)
+  {
+    this.interval = interval;
+  }
+
   int getTicks()
   {
     return ticks;
+  }
+
+  boolean isEnabled()
+  {
+    return isEnabled;
+  }
+
+  void start()
+  {
+    isEnabled = true;
+  }
+
+  void stop()
+  {
+    isEnabled = false;
   }
 
   void reset()
@@ -25,7 +47,9 @@ public class Timer
   boolean update() {
     if (millis() > timer) {
       timer = millis() + interval;
-      ticks++;
+      if (isEnabled) {
+        ticks++;
+      }
       return true;
     } else {
       return false;

@@ -2,6 +2,8 @@ Timer randomPegTimer = new Timer(200);
 
 void randomPegs()
 {
+  randomPegTimer.setInterval(config.randomPegSpeed);
+
   if (randomPegTimer.update()) {
     grid.setAllRandom();
   }
@@ -11,6 +13,7 @@ void startLoadingSequence()
 {
   loadingBar.reset();
   loadingBar.start();
+  actionTimer.start();
 }
 
 Timer actionTimer = new Timer(400);
@@ -22,26 +25,42 @@ void loadScreen()
   } else {
     if (actionTimer.update())
     {
-      grid.setAllRandom();
-    } else if (actionTimer.getTicks() > 8) {
-      config.loadingSequenceEnabled = false;
-      grid.setAllOff();
+      int ticks = actionTimer.getTicks();
+      if (ticks < 8)
+      {
+        grid.setAllRandom();
+      } else if (ticks == 8 && actionTimer.isEnabled()) {
+        config.loadingSequenceEnabled = false;
+        actionTimer.stop();
+        grid.setAllOff();
+        config.scrollSpeed = 20;
+        title.start();
+      } /*else if (!title.isRunning() && !actionTimer.isEnabled()){
+       println("Starting timer");
+       
+       actionTimer.start();
+       } else if (ticks >12) {
+       config.loadingSequenceEnabled = false;
+       grid.setAllOff();
+       } else{
+       grid.setAllRandom();
+       }
+       */
     }
   }
 }
 
-float c;
+float rc;
 void rainbowCycle()
 {
-  //if (c >= 255)  c=0;  else  c++;
-  c = (c >= 255) ? (0) : (c+config.rainbowSpeed);
+  rc = (rc >= 255) ? (0) : (rc + config.rainbowSpeed);
+
+  colorMode(HSB, 255);
   for (int i=0; i < PegGrid.GRID_W; i++) {
     for (int j=0; j < PegGrid.GRID_H; j++) {
-      colorMode(HSB, 255);
-      grid.setColorAtCoord(i, j, color(c, 255, 255));
+      grid.setColorAtCoord(i, j, color(rc, 255, 255));
     }
   }
-  
   colorMode(RGB, 255);
 }
 

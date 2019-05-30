@@ -33,7 +33,8 @@ public class LoadingBar
     timer = new Timer(65);
     this.percent = 0;
 
-    dotMatrix = createFont("DOTMATRI.TTF", 110);
+    //dotMatrix = createFont("DOTMATRI.TTF", 110);
+    dotMatrix = createFont("DOTMBold.TTF", 110);
 
     this.duration = 5;
     this.reversed = false;
@@ -71,6 +72,7 @@ public class LoadingBar
   void reset()
   {
     isLoading = false;
+    count = 0;
     percent = 0;
   }
 
@@ -87,7 +89,9 @@ public class LoadingBar
 
     if (timer.update()) {
       count++;
-      if (percent < 100) {
+      if(count < holdCounts+10){
+        isLoading = true;
+      }else if (percent < 100) {
         percent++;
         isLoading = true;
       } else if (percent == 100 && nextAction == 0) {
@@ -106,7 +110,7 @@ public class LoadingBar
     textSize(230); 
     textAlign(LEFT, CENTER);
     fill(color(255, 255, 255));  // Set fill to white
-    text(percent+"%", (width/3)-10, (height/2.2));
+    text(percent+"%", (width/3)-30, (height/2.2));
     /*
     else{
      rectMode(CORNER);
