@@ -79,16 +79,36 @@ public class PegGrid
     int idx = getIndexAtPoint(xpos, ypos);
     nextColorAtIdx(idx);
   }
+  
+  public color getColorAtCoord(int xpos, int ypos)
+  {
+    println("xpos: " + xpos + " ypos: " + ypos);
+    int idx = getIndexAtPoint(xpos, ypos);
+    return pegs[idx].getColor();
+  }
+  
+  public void setColorAtCoord(int xpos, int ypos, color c)
+  {
+    int idx = getIndexAtPoint(xpos, ypos);
+    pegs[idx].setColor(c);
+  }
 
   public void nextColorAtIdx(int idx)
   {
     pegs[idx].nextColor();
   }
 
-  public void setAll(int c)
+  public void setAll(int c)  
   {
     for (int i = 0; i < pegs.length; i++) {
       pegs[i].setColor(c);
+    }
+  }
+  
+  public void setAllBrightness(int b)
+  {
+    for (int i = 0; i < pegs.length; i++) {
+      pegs[i].setBrigthness(b);
     }
   }
 
@@ -98,6 +118,14 @@ public class PegGrid
   }
 
   public void setAllRandom()
+  {
+    for (int i = 0; i < pegs.length; i++) {
+      color c = color(random(0,255), random(0,255), random(0,255));
+      pegs[i].setColor(c);
+    }
+  }
+  
+  public void setAllRandomStandard()
   {
     for (int i = 0; i < pegs.length; i++) {
       pegs[i].setColor(Colors.randomColor());

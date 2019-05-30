@@ -49,13 +49,17 @@ RippleGenerator ripGen;
 //Desktop Viewer
 DesktopViewer desktop;
 
+//Loading Sequence
+LoadingBar loadingBar;
+
+
 void settings() {
   size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
 }
 
 void setup()
 {
-  colorMode(HSB, 100);
+  colorMode(RGB, 100);
   //frameRate(30);
   println("Controller: Initializing Display Parameters. Done.");
   grid = new PegGrid(this, "127.0.0.1", 7890);
@@ -88,6 +92,11 @@ void setup()
   config = new Configuration();
 
   desktop = new DesktopViewer(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO));
+
+  loadingBar = new LoadingBar();
+  
+  //config.loadingSequenceEnabled = true;
+  //startLoadingSequence();
 }
 
 void initNetworking()
@@ -154,6 +163,16 @@ void draw()
   if (config.showDesktop) {
     desktop.draw();
   }
+  if (config.randomPegsEnabled){
+    randomPegs();
+  }
+  if (config.loadingSequenceEnabled) {
+    loadScreen();
+  }
+  if (config.rainbowEnabled) {
+    rainbowCycle();
+  }
+  
 }
 
 // ****************************************

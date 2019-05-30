@@ -1,6 +1,6 @@
 # LiteBrite
 
-LiteBrite is a project created for Cerner's DevCon 2019. It's original purpose was to be an interactive piece at the conference for spectators to play with. However, due to many facotrs it was decided to design a much more versitle system. This LiteBrite is more of an interactive display. 
+LiteBrite is a project created for Cerner's DevCon 2019. Its original purpose was to be an interactive piece at the conference for spectators to play with. In throwing around ideas it was determined we could build something that would allow for more uses in the future. This LiteBrite is more of an interactive display. 
 
 # Contributers
   - Paul Sites (paul.sites@cerner.com)
@@ -33,9 +33,10 @@ LiteBrite is a project created for Cerner's DevCon 2019. It's original purpose w
 
 # Design Details
 LiteBrite features:
-- 912 RGB individually addressible LED's
+- 912 individually addressible RGB LED's
 - 912 Arcade buttons
 - 24 Arduino Nano's
+- 24 Custom 40 input circuit boards
 - 3 Adafruit FadeCandy boards
 - Unmanaged network switch
 - Interactivity handled through Processing.
