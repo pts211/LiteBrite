@@ -328,3 +328,11 @@ void screenshot()
 // to customise the GUI controls
 public void customGUI() {
 }
+
+// Update the view graphic
+public void updatePaintColorView(color newcolor) {
+  PGraphics v = paintColor_view.getGraphics();
+  v.beginDraw();
+  v.background(newcolor);
+  v.endDraw();
+}

@@ -100,6 +100,14 @@ public void cbx_capture_time_clicked1(GCheckbox source, GEvent event) { //_CODE_
   config.captureUsageEnabled = cbx_capture_time.isSelected();
 } //_CODE_:cbx_capture_time:805883:
 
+public void sld_paintColor_change1(GSlider source, GEvent event) { //_CODE_:sld_paintColor:615317:
+  println("slider1 - GSlider >> GEvent." + event + " @ " + millis());
+  int rc = sld_paintColor.getValueI();
+  colorMode(HSB, 255);
+  updatePaintColorView(color(rc, 255, 255));
+  colorMode(RGB, 255);
+} //_CODE_:sld_paintColor:615317:
+
 
 
 // Create all the GUI controls. 
@@ -123,10 +131,10 @@ public void createGUI(){
   cbx_ripple.setText("Ripple Effect");
   cbx_ripple.setOpaque(false);
   cbx_ripple.addEventHandler(this, "cbx_ripple_clicked");
-  bttn_ = new GButton(settings, 20, 380, 80, 30);
+  bttn_ = new GButton(settings, 700, 560, 80, 30);
   bttn_.setText("Clear");
   bttn_.addEventHandler(this, "bttn_clear_click");
-  bttn_saveImg = new GButton(settings, 20, 340, 80, 30);
+  bttn_saveImg = new GButton(settings, 700, 520, 80, 30);
   bttn_saveImg.setText("Save");
   bttn_saveImg.addEventHandler(this, "bttn_saveImg_click");
   cbx_desktop = new GCheckbox(settings, 10, 160, 120, 20);
@@ -137,7 +145,7 @@ public void createGUI(){
   bttn_intro = new GButton(settings, 10, 40, 80, 30);
   bttn_intro.setText("Intro Sequence");
   bttn_intro.addEventHandler(this, "bttn_intro_click");
-  sld_brightness = new GSlider(settings, 140, 370, 293, 44, 20.0);
+  sld_brightness = new GSlider(settings, 190, 310, 293, 44, 20.0);
   sld_brightness.setLimits(1, 0, 100);
   sld_brightness.setNumberFormat(G4P.INTEGER, 0);
   sld_brightness.setOpaque(false);
@@ -178,11 +186,17 @@ public void createGUI(){
   cbx_scrollingTextLoop.setText("Loop");
   cbx_scrollingTextLoop.setOpaque(false);
   cbx_scrollingTextLoop.addEventHandler(this, "cbx_scrollingTextLoop_clicked");
-  cbx_capture_time = new GCheckbox(settings, 20, 480, 120, 20);
+  cbx_capture_time = new GCheckbox(settings, 590, 520, 110, 30);
   cbx_capture_time.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   cbx_capture_time.setText("Capture Usage");
   cbx_capture_time.setOpaque(false);
   cbx_capture_time.addEventHandler(this, "cbx_capture_time_clicked1");
+  paintColor_view = new GView(settings, 330, 500, 80, 70, P3D);
+  sld_paintColor = new GSlider(settings, 20, 500, 310, 70, 30.0);
+  sld_paintColor.setLimits(255, 0, 255);
+  sld_paintColor.setNumberFormat(G4P.INTEGER, 0);
+  sld_paintColor.setOpaque(false);
+  sld_paintColor.addEventHandler(this, "sld_paintColor_change1");
   settings.loop();
 }
 
@@ -204,3 +218,5 @@ GSlider sld_randPegSpeed;
 GSlider sld_scrollSpeed; 
 GCheckbox cbx_scrollingTextLoop; 
 GCheckbox cbx_capture_time; 
+GView paintColor_view; 
+GSlider sld_paintColor; 
