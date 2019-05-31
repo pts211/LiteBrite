@@ -101,12 +101,18 @@ public void cbx_capture_time_clicked1(GCheckbox source, GEvent event) { //_CODE_
 } //_CODE_:cbx_capture_time:805883:
 
 public void sld_paintColor_change1(GSlider source, GEvent event) { //_CODE_:sld_paintColor:615317:
-  println("slider1 - GSlider >> GEvent." + event + " @ " + millis());
+  //println("slider1 - GSlider >> GEvent." + event + " @ " + millis());
   int rc = sld_paintColor.getValueI();
   colorMode(HSB, 255);
   updatePaintColorView(color(rc, 255, 255));
+  config.paintColor = color(rc, 255, 255);
   colorMode(RGB, 255);
 } //_CODE_:sld_paintColor:615317:
+
+public void cbx_usePaint_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_usePaint:453036:
+  println("cbx_usePaint - GCheckbox >> GEvent." + event + " @ " + millis());
+  config.usePaintColor = cbx_usePaint.isSelected();
+} //_CODE_:cbx_usePaint:453036:
 
 
 
@@ -197,6 +203,11 @@ public void createGUI(){
   sld_paintColor.setNumberFormat(G4P.INTEGER, 0);
   sld_paintColor.setOpaque(false);
   sld_paintColor.addEventHandler(this, "sld_paintColor_change1");
+  cbx_usePaint = new GCheckbox(settings, 20, 480, 120, 20);
+  cbx_usePaint.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  cbx_usePaint.setText("Use paint color");
+  cbx_usePaint.setOpaque(false);
+  cbx_usePaint.addEventHandler(this, "cbx_usePaint_clicked");
   settings.loop();
 }
 
@@ -220,3 +231,4 @@ GCheckbox cbx_scrollingTextLoop;
 GCheckbox cbx_capture_time; 
 GView paintColor_view; 
 GSlider sld_paintColor; 
+GCheckbox cbx_usePaint; 

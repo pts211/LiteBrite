@@ -80,14 +80,14 @@ public class PegGrid
     int idx = getIndexAtPoint(xpos, ypos);
     nextColorAtIdx(idx);
   }
-  
+
   public color getColorAtCoord(int xpos, int ypos)
   {
     println("xpos: " + xpos + " ypos: " + ypos);
     int idx = getIndexAtPoint(xpos, ypos);
     return pegs[idx].getColor();
   }
-  
+
   public void setColorAtCoord(int xpos, int ypos, color c)
   {
     int idx = getIndexAtPoint(xpos, ypos);
@@ -105,7 +105,7 @@ public class PegGrid
       pegs[i].setColor(c);
     }
   }
-  
+
   public void setAllBrightness(int b)
   {
     for (int i = 0; i < pegs.length; i++) {
@@ -121,11 +121,11 @@ public class PegGrid
   public void setAllRandom()
   {
     for (int i = 0; i < pegs.length; i++) {
-      color c = color(random(0,255), random(0,255), random(0,255));
+      color c = color(random(0, 255), random(0, 255), random(0, 255));
       pegs[i].setColor(c);
     }
   }
-  
+
   public void setAllRandomStandard()
   {
     for (int i = 0; i < pegs.length; i++) {
@@ -192,7 +192,14 @@ public class PegGrid
 
       if (containmentCheck(mP, pP, DIAMETER/2)) {
         println("Clicked peg " + i + "."); 
-        pegs[i].nextColor();
+        if (config.usePaintColor) {
+          colorMode(HSB, 255);
+          pegs[i].setColor(config.paintColor);
+          colorMode(RGB, 255);
+        } else {
+          pegs[i].nextColor();
+        }
+
         return pegs[i];
       }
     }

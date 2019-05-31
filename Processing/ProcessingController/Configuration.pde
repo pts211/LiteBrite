@@ -24,6 +24,9 @@ public class Configuration
   
   public boolean captureUsageEnabled = false;
   
+  public boolean usePaintColor = false;
+  public color paintColor;
+  
   Configuration() {
   }
 }
