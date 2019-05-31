@@ -74,47 +74,26 @@ public void sld_rainSpeed_change(GSlider source, GEvent event) { //_CODE_:sld_ra
   config.rainbowSpeed = source.getValueF();
 } //_CODE_:sld_rainSpeed:356317:
 
-public void sld_randPegSpeed_change(GSlider source, GEvent event) { //_CODE_:sld_randPegSpeed:732956:
-  println("sld_randPegSpeed - GSlider >> GEvent." + event + " @ " + millis());
+public void bttn_scrollingText_click(GButton source, GEvent event) { //_CODE_:bttn_scrollingText:631403:
+  println("button1 - GButton >> GEvent." + event + " @ " + millis());
+  title.start();
+} //_CODE_:bttn_scrollingText:631403:
+
+public void sld_randPegSpeed_change(GSlider source, GEvent event) { //_CODE_:sld_randPegSpeed:729248:
+  println("slider1 - GSlider >> GEvent." + event + " @ " + millis());
   config.randomPegSpeed = int(source.getValueF() * 1000);
-} //_CODE_:sld_randPegSpeed:732956:
+} //_CODE_:sld_randPegSpeed:729248:
 
-public void textX_change(GTextField source, GEvent event) { //_CODE_:textX:894577:
-  println("textX - GTextField >> GEvent." + event + " @ " + millis());
-  config.textX = Integer.parseInt(textX.getText());
-  config.textY = Integer.parseInt(textY.getText());
-  config.textS = Integer.parseInt(textS.getText());
-} //_CODE_:textX:894577:
-
-public void textY_change(GTextField source, GEvent event) { //_CODE_:textY:302975:
-  println("textY - GTextField >> GEvent." + event + " @ " + millis());
-  config.textX = Integer.parseInt(textX.getText());
-  config.textY = Integer.parseInt(textY.getText());
-  config.textS = Integer.parseInt(textS.getText());
-} //_CODE_:textY:302975:
-
-public void textS_change(GTextField source, GEvent event) { //_CODE_:textS:368202:
-  println("textS - GTextField >> GEvent." + event + " @ " + millis());
-  config.textX = Integer.parseInt(textX.getText());
-  config.textY = Integer.parseInt(textY.getText());
-  config.textS = Integer.parseInt(textS.getText());
-} //_CODE_:textS:368202:
-
-public void sld_scrollSpeed_change(GSlider source, GEvent event) { //_CODE_:sld_scrollSpeed:369299:
-  println("sld_scrollSpeed - GSlider >> GEvent." + event + " @ " + millis());
+public void sld_scrollSpeed_change(GSlider source, GEvent event) { //_CODE_:sld_scrollSpeed:237074:
+  println("slider2 - GSlider >> GEvent." + event + " @ " + millis());
   config.scrollSpeed = sld_scrollSpeed.getValueI();
-} //_CODE_:sld_scrollSpeed:369299:
+} //_CODE_:sld_scrollSpeed:237074:
 
-public void cbx_scrollingTextLoop_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_scrollingTextLoop:893392:
-  println("cbx_scrollingText - GCheckbox >> GEvent." + event + " @ " + millis());
+public void cbx_scrollingTextLoop_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_scrollingTextLoop:257090:
+  println("checkbox1 - GCheckbox >> GEvent." + event + " @ " + millis());
   config.scrollingTextLoopEnabled = cbx_scrollingTextLoop.isSelected();
   title.setLooping(config.scrollingTextLoopEnabled);
-} //_CODE_:cbx_scrollingTextLoop:893392:
-
-public void bttn_scrollingText_click(GButton source, GEvent event) { //_CODE_:bttn_scrollingText:934855:
-  println("bttn_scrollingText - GButton >> GEvent." + event + " @ " + millis());
-  title.start();
-} //_CODE_:bttn_scrollingText:934855:
+} //_CODE_:cbx_scrollingTextLoop:257090:
 
 
 
@@ -153,7 +132,7 @@ public void createGUI(){
   bttn_intro = new GButton(settings, 10, 40, 80, 30);
   bttn_intro.setText("Intro Sequence");
   bttn_intro.addEventHandler(this, "bttn_intro_click");
-  sld_brightness = new GSlider(settings, 150, 510, 293, 44, 20.0);
+  sld_brightness = new GSlider(settings, 140, 370, 293, 44, 20.0);
   sld_brightness.setLimits(1, 0, 100);
   sld_brightness.setNumberFormat(G4P.INTEGER, 0);
   sld_brightness.setOpaque(false);
@@ -174,41 +153,26 @@ public void createGUI(){
   sld_rainSpeed.setNumberFormat(G4P.DECIMAL, 2);
   sld_rainSpeed.setOpaque(false);
   sld_rainSpeed.addEventHandler(this, "sld_rainSpeed_change");
+  bttn_scrollingText = new GButton(settings, 9, 249, 121, 21);
+  bttn_scrollingText.setText("Scrolling Text");
+  bttn_scrollingText.addEventHandler(this, "bttn_scrollingText_click");
   sld_randPegSpeed = new GSlider(settings, 140, 180, 190, 40, 10.0);
   sld_randPegSpeed.setShowValue(true);
-  sld_randPegSpeed.setLimits(0.5, 0.0, 5.0);
-  sld_randPegSpeed.setNumberFormat(G4P.DECIMAL, 1);
+  sld_randPegSpeed.setLimits(0.5, 0.0, 1.0);
+  sld_randPegSpeed.setNumberFormat(G4P.DECIMAL, 2);
   sld_randPegSpeed.setOpaque(false);
   sld_randPegSpeed.addEventHandler(this, "sld_randPegSpeed_change");
-  textX = new GTextField(settings, 160, 370, 70, 20, G4P.SCROLLBARS_NONE);
-  textX.setText("300");
-  textX.setPromptText("300");
-  textX.setOpaque(true);
-  textX.addEventHandler(this, "textX_change");
-  textY = new GTextField(settings, 160, 400, 70, 20, G4P.SCROLLBARS_NONE);
-  textY.setText("300");
-  textY.setPromptText("300");
-  textY.setOpaque(true);
-  textY.addEventHandler(this, "textY_change");
-  textS = new GTextField(settings, 160, 430, 70, 20, G4P.SCROLLBARS_NONE);
-  textS.setText("100");
-  textS.setPromptText("100");
-  textS.setOpaque(true);
-  textS.addEventHandler(this, "textS_change");
   sld_scrollSpeed = new GSlider(settings, 140, 240, 190, 40, 10.0);
   sld_scrollSpeed.setShowValue(true);
   sld_scrollSpeed.setLimits(5, 0, 100);
   sld_scrollSpeed.setNumberFormat(G4P.INTEGER, 0);
   sld_scrollSpeed.setOpaque(false);
   sld_scrollSpeed.addEventHandler(this, "sld_scrollSpeed_change");
-  cbx_scrollingTextLoop = new GCheckbox(settings, 350, 250, 60, 20);
+  cbx_scrollingTextLoop = new GCheckbox(settings, 340, 250, 120, 20);
   cbx_scrollingTextLoop.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   cbx_scrollingTextLoop.setText("Loop");
   cbx_scrollingTextLoop.setOpaque(false);
   cbx_scrollingTextLoop.addEventHandler(this, "cbx_scrollingTextLoop_clicked");
-  bttn_scrollingText = new GButton(settings, 10, 250, 120, 20);
-  bttn_scrollingText.setText("Scrolling Text");
-  bttn_scrollingText.addEventHandler(this, "bttn_scrollingText_click");
   settings.loop();
 }
 
@@ -225,10 +189,7 @@ GSlider sld_brightness;
 GCheckbox cbx_random; 
 GCheckbox cbx_rainbow; 
 GSlider sld_rainSpeed; 
+GButton bttn_scrollingText; 
 GSlider sld_randPegSpeed; 
-GTextField textX; 
-GTextField textY; 
-GTextField textS; 
 GSlider sld_scrollSpeed; 
 GCheckbox cbx_scrollingTextLoop; 
-GButton bttn_scrollingText; 

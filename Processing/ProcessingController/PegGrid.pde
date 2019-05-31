@@ -23,7 +23,8 @@ public class PegGrid
     opc = new OPC(parent, ip, port);
     opc.showLocations(false);
 
-    generateGrid();
+    //generateGrid();
+    opc.ledGrid(0, 38, 24, width/2.0, height/2.0, DIAMETER, DIAMETER, 0, false);
 
     for (int i = 0; i < pegs.length; i++) {
       Point p = opc.getLocationByIndex(i);
