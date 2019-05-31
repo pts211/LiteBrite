@@ -21,6 +21,9 @@ public class Configuration
   public int textY = 0;
   public int textS = 0;
   
+  
+  public boolean captureUsageEnabled = false;
+  
   Configuration() {
   }
 }

@@ -97,10 +97,10 @@ void setup()
   desktop = new DesktopViewer(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO));
 
   loadingBar = new LoadingBar();
-  
+
   //config.loadingSequenceEnabled = true;
   //startLoadingSequence();
-  
+
   title = new ScrollingText();
 }
 
@@ -168,7 +168,7 @@ void draw()
   if (config.showDesktop) {
     desktop.draw();
   }
-  if (config.randomPegsEnabled){
+  if (config.randomPegsEnabled) {
     randomPegs();
   }
   if (config.loadingSequenceEnabled) {
@@ -178,7 +178,6 @@ void draw()
     rainbowCycle();
   }
   title.draw();
-
 }
 
 // ****************************************
@@ -190,8 +189,11 @@ void mousePressed()
 { 
   Peg peg = grid.mousePressed(mouseX, mouseY);
 
-  if (config.rippleEnabled) {
-    if (peg != null) {
+  if ( peg != null) {
+    if (config.captureUsageEnabled) {
+      screenshot();
+    }
+    if (config.rippleEnabled) {
       ripGen.addRipple(peg.getPoint(), peg.getColor());
     }
   }
@@ -230,6 +232,8 @@ void keyPressed()
     break;
   case 'S':  
     saveFrame();
+    //String timestamp = str(month()) + str(day()) + str(hour()) + str(minute()) + str(second());
+    //saveFrame("timelapse-"+timestamp + ".png");
     println("Saving image.");
     break;
   default:
@@ -278,6 +282,9 @@ void processMessage(String ip, String message)
   {
     if (Integer.parseInt(String.valueOf(message.charAt(x))) == 1) {
       grid.nextColorAtCoord(x, yidx);
+      if (config.captureUsageEnabled) {
+        screenshot();
+      }
     }
   }
 }
@@ -304,6 +311,12 @@ void nextImage()
     currentImg = -1;
   }
   hasDrawn = false;
+}
+
+void screenshot()
+{  
+  String timestamp = str(month()) + str(day()) + str(hour()) + str(minute()) + str(second()) + str(millis());
+  saveFrame("timelapses/"+str(month()) + str(day()) + "/timelapse-##########-"+timestamp + ".png");
 }
 
 // ****************************************

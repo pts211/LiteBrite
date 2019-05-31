@@ -95,6 +95,11 @@ public void cbx_scrollingTextLoop_clicked(GCheckbox source, GEvent event) { //_C
   title.setLooping(config.scrollingTextLoopEnabled);
 } //_CODE_:cbx_scrollingTextLoop:257090:
 
+public void cbx_capture_time_clicked1(GCheckbox source, GEvent event) { //_CODE_:cbx_capture_time:805883:
+  println("cbx_capture_time - GCheckbox >> GEvent." + event + " @ " + millis());
+  config.captureUsageEnabled = cbx_capture_time.isSelected();
+} //_CODE_:cbx_capture_time:805883:
+
 
 
 // Create all the GUI controls. 
@@ -173,6 +178,11 @@ public void createGUI(){
   cbx_scrollingTextLoop.setText("Loop");
   cbx_scrollingTextLoop.setOpaque(false);
   cbx_scrollingTextLoop.addEventHandler(this, "cbx_scrollingTextLoop_clicked");
+  cbx_capture_time = new GCheckbox(settings, 20, 480, 120, 20);
+  cbx_capture_time.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  cbx_capture_time.setText("Capture Usage");
+  cbx_capture_time.setOpaque(false);
+  cbx_capture_time.addEventHandler(this, "cbx_capture_time_clicked1");
   settings.loop();
 }
 
@@ -193,3 +203,4 @@ GButton bttn_scrollingText;
 GSlider sld_randPegSpeed; 
 GSlider sld_scrollSpeed; 
 GCheckbox cbx_scrollingTextLoop; 
+GCheckbox cbx_capture_time; 
