@@ -10,7 +10,7 @@
    The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
 */
 
-#define ROW_NUMBER   1
+#define ROW_NUMBER   2
 //The ROW_NUMBER will automatically configure the correct IP and unique MAC address.
 
 
@@ -130,7 +130,7 @@ char textToSend[DATA_WIDTH];
 void loop () {
   //REQUIRED. Handles low level network responses. Part of the MAC address fix.
   ether.packetLoop(ether.packetReceive());
-  
+
   // Read the state of all zones.
   pinValues = read_shift_regs();
 
@@ -177,14 +177,14 @@ void loop () {
     }
   */
 
-/*
-  String pinValsStr = create_pin_values_string(pinValues);
-  String deltaPinValsStr = create_pin_values_string(deltaPinValues);
-  String oldDeltaPinValsStr = create_pin_values_string(oldDeltaPinValues);
-  Serial.println("pins:      " + pinValsStr);
-  Serial.println("delVal:    " + deltaPinValsStr);
-  Serial.println("oldDelVal: " + oldDeltaPinValsStr);
-*/
+  /*
+    String pinValsStr = create_pin_values_string(pinValues);
+    String deltaPinValsStr = create_pin_values_string(deltaPinValues);
+    String oldDeltaPinValsStr = create_pin_values_string(oldDeltaPinValues);
+    Serial.println("pins:      " + pinValsStr);
+    Serial.println("delVal:    " + deltaPinValsStr);
+    Serial.println("oldDelVal: " + oldDeltaPinValsStr);
+  */
 
   if (deltaPinValues != oldDeltaPinValues)
   {
@@ -204,6 +204,10 @@ void loop () {
 
     oldPinValues = pinValues;
     oldDeltaPinValues = deltaPinValues;
+  }
+  if (pinValues != oldPinValues)
+  {
+    oldPinValues = pinValues;
   }
 
 
