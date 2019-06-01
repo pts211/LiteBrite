@@ -23,8 +23,8 @@ public class PegGrid
     opc = new OPC(parent, ip, port);
     opc.showLocations(false);
 
-    //generateGrid();
-    opc.ledGrid(0, 38, 24, width/2.0, height/2.0, DIAMETER, DIAMETER, 0, false);
+    generateGrid();
+    //opc.ledGrid(0, 38, 24, width/2.0, height/2.0, DIAMETER, DIAMETER, 0, false);
 
     for (int i = 0; i < pegs.length; i++) {
       Point p = opc.getLocationByIndex(i);
@@ -49,7 +49,11 @@ public class PegGrid
     float s = sin(angle + HALF_PI);
     float c = cos(angle + HALF_PI);
     for (int i = 0; i < numStrips; i++) {
-      reversed = ((i % 2) == 1); //Use if alternating every row.
+      //reversed = ((i % 2) == 1); //Use if alternating every row.
+      
+      if( i % 8 == 0){
+        reversed = !reversed;
+      }
       /*
       //Use if alternating FadeCandy's on different sides.
        if( (i != 0) && ((i % 8) == 0) ){
