@@ -283,7 +283,8 @@ void processMessage(String ip, String message)
     if (Integer.parseInt(String.valueOf(message.charAt(x))) == 1) {
       if (message.contains("c")) {
         grid.setRow(yidx, Colors.BLACK);
-        grid.setColorAtCoord(x, yidx, Colors.WHITE);
+        grid.nextColorAtCoord(x, yidx);
+        grid.nextColorAtCoord(x, yidx);
       } else if (config.usePaintColor) {
         grid.setColorAtCoord(x, yidx, config.paintColor);
       } else {

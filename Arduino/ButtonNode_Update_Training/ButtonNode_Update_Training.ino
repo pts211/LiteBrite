@@ -10,7 +10,9 @@
    The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
 */
 
-#define ROW_NUMBER   1
+#define ROW_NUMBER   18
+boolean isTraining = false;
+
 //The ROW_NUMBER will automatically configure the correct IP and unique MAC address.
 
 #include <EEPROM.h>
@@ -82,14 +84,12 @@ BitBool<DATA_WIDTH> pinValuesB;
 BitBool<DATA_WIDTH> oldPinValuesB;
 
 
-boolean isTraining = true;
+
 int activeMappingIndex = 0;
 byte buttonMapping[DATA_WIDTH];
 String calibrationString = "00000000000000000000000000000000000000";//String(DATA_WIDTH, '0');
 
-
-
-
+bool alternate = false;
 
 BitBool<DATA_WIDTH> pXOR(BitBool<DATA_WIDTH> x, BitBool<DATA_WIDTH> y)
 {
@@ -142,10 +142,17 @@ void startButtonTraining()
 
 String generateCalibrationString(int index)
 {
+  //Serial.print("DATA_WIDTH: ");
+  //Serial.println(DATA_WIDTH);
   String output = "";
   for (int i = 0; i < DATA_WIDTH; i++)
   {
-    output += (i == index) ? "1" : "0";
+    if (index == -1) {
+      output += "1";
+    } else {
+      output += (i == index) ? "1" : "0";
+    }
+
   }
   //output += "c";
   return output;
@@ -154,38 +161,36 @@ String generateCalibrationString(int index)
 void endButtonTraining()
 {
   isTraining = false;
-  Serial.println("Mapping complete.");
+  Serial.println(F("Mapping complete."));
   printButtonMapping();
-  //saveButtonMapping();
+  saveButtonMapping();
 }
 
 void readButtonMapping()
 {
-  Serial.println("Config: Reading mapping.");
+  Serial.println(F("Config: Reading mapping."));
 
   if ( EEPROM.read ( 0 ) != 0xff ) {
     for (int i = 0; i < DATA_WIDTH; ++i )
       buttonMapping [ i ] = EEPROM.read ( i );
   }
-  Serial.println("Config: Read.");
+  Serial.println(F("Config: Read."));
 }
 
 void saveButtonMapping()
 {
-  Serial.println("Config: Saving mapping.");
+  Serial.println(F("Config: Saving mapping."));
   int eeAddress = 0;   //Location we want the data to be put.
   for ( int i = 0; i < DATA_WIDTH; ++i ) {
     EEPROM.write ( i, buttonMapping [ i ] );
   }
-  Serial.println("Config: Saved.");
+  Serial.println(F("Config: Saved."));
 }
 
 void setup () {
   Serial.begin(9600);
 
-  Serial.println("ButtonNode: Starting...");
-
-  initMapping();
+  Serial.println(F("ButtonNode: Starting..."));
 
   initNetworking();
   initShiftRegisters();
@@ -195,20 +200,24 @@ void setup () {
   printButtonMapping();
   //saveButtonMapping();
 
-  Serial.println("ButtonNode: Ready.");
+  readButtonMapping();
+
+  printButtonMapping();
+
+  Serial.println(F("ButtonNode: Ready."));
 
 }
 
 void initNetworking()
 {
-  Serial.println("ButtonNode: Initializing Network.");
+  Serial.println(F("ButtonNode: Initializing Network."));
   if (ether.begin(sizeof Ethernet::buffer, mymac, SS) == 0) {
-    Serial.println( "Failed to access Ethernet controller");
+    Serial.println( F("Failed to access Ethernet controller"));
   }
 
   if (!useDHCP || !ether.dhcpSetup()) {
     if (useDHCP) {
-      Serial.println("DHCP failed. Setting static ip.");
+      Serial.println(F("DHCP failed. Setting static ip."));
     }
     ether.staticSetup(myip, gwip, dns, mask);
   }
@@ -227,7 +236,7 @@ void initNetworking()
 
 void initShiftRegisters()
 {
-  Serial.println("ButtonNode: Initializing Buttons.");
+  Serial.println(F("ButtonNode: Initializing Buttons."));
   // Initialize our digital pins
   pinMode(ploadPin, OUTPUT);
   pinMode(clockEnablePin, OUTPUT);
@@ -337,7 +346,7 @@ void loop () {
     {
       String deltaPinValsStr = create_pin_values_stringB(deltaPinValuesB);
       if (deltaPinValsStr.indexOf('1') >= 0) {
-        Serial.println("SIGNIFICANT");
+        //Serial.println(F("SIGNIFICANT"));
 
         train(deltaPinValsStr);
         /*
@@ -348,17 +357,18 @@ void loop () {
           }
         */
       } else {
-        Serial.println("INSIGNIFICANT");
+        //Serial.println(F("INSIGNIFICANT"));
       }
 
     } else {
       String deltaPinValsStr = create_pin_values_stringB_calib(deltaPinValuesB);
       if (deltaPinValsStr.indexOf('1') >= 0) {
+        //Serial.println(F("SIGNIFICANT"));
         deltaPinValsStr.toCharArray(textToSend, DATA_WIDTH);
         ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );
       }
       else {
-        Serial.println("INSIGNIFICANT");
+        //Serial.println(F("INSIGNIFICANT"));
       }
     }
 
@@ -413,11 +423,55 @@ void loop () {
     }
   */
 
-  //if (isTraining && hasChanged && (millis() > timer) ) {
-  /*
-    if (isTraining && hasChanged) {
-    //timer = millis() + 500;
+  if (isTraining && (millis() > timer) ) {
+    timer = millis() + 250;
 
+    calibrationString = generateCalibrationString(activeMappingIndex);
+    if (alternate) {
+      calibrationString += "c";
+    }
+    alternate = !alternate;
+
+
+
+    //Serial.print(F("Sending calibration string: "));
+    //Serial.println(calibrationString);
+    //Serial.println(ipToString(srip));
+
+    char calibrationTextToSend[calibrationString.length() + 2];
+
+    calibrationString.toCharArray(calibrationTextToSend, calibrationString.length() + 1);
+    ether.sendUdp(calibrationTextToSend, sizeof(calibrationTextToSend), srcPort, srip, dstPort );
+  }
+
+
+
+  delay(POLL_DELAY_MSEC);
+
+}
+
+
+
+void train(String deltaPinValsStr)
+{
+  buttonMapping[activeMappingIndex] = deltaPinValsStr.indexOf('1');
+
+
+
+  activeMappingIndex++;
+
+  if (activeMappingIndex >= NUM_ACTIVE_INPUTS) {
+
+    calibrationString = generateCalibrationString(-1);
+
+    char calibrationTextToSend[calibrationString.length() + 1];
+
+    calibrationString.toCharArray(calibrationTextToSend, calibrationString.length());
+    ether.sendUdp(calibrationTextToSend, sizeof(calibrationTextToSend), srcPort, srip, dstPort );
+
+    //Configuration complete.
+    endButtonTraining();
+  } else {
     calibrationString = generateCalibrationString(activeMappingIndex);
 
     Serial.print("Sending calibration string: ");
@@ -428,33 +482,8 @@ void loop () {
 
     calibrationString.toCharArray(calibrationTextToSend, calibrationString.length());
     ether.sendUdp(calibrationTextToSend, sizeof(calibrationTextToSend), srcPort, srip, dstPort );
-    }
-  */
-  delay(POLL_DELAY_MSEC);
 
-}
-
-void train(String deltaPinValsStr)
-{
-  buttonMapping[activeMappingIndex] = deltaPinValsStr.indexOf('1');
-  
-  if (activeMappingIndex >= NUM_ACTIVE_INPUTS - 1) {
-  
-    //Configuration complete.
-    endButtonTraining();
   }
-  calibrationString = generateCalibrationString(activeMappingIndex);
-
-  Serial.print("Sending calibration string: ");
-  Serial.println(calibrationString);
-  //Serial.println(ipToString(srip));
-
-  char calibrationTextToSend[calibrationString.length() + 1];
-
-  calibrationString.toCharArray(calibrationTextToSend, calibrationString.length());
-  ether.sendUdp(calibrationTextToSend, sizeof(calibrationTextToSend), srcPort, srip, dstPort );
-  
-  activeMappingIndex++;
 }
 
 
