@@ -109,6 +109,22 @@ public class PegGrid
       pegs[i].setColor(c);
     }
   }
+  
+  public void setRow(int row, int c)
+  {
+    for (int i = 0; i < GRID_W; i++) {
+      int idx = getIndexAtPoint(i, row);
+      pegs[idx].setColor(c);
+    }
+  }
+  
+  public void setCol(int col, int c)
+  {
+    for (int i = 0; i < GRID_W; i++) {
+      int idx = getIndexAtPoint(col, i);
+      pegs[idx].setColor(c);
+    }
+  }
 
   public void setAllBrightness(int b)
   {

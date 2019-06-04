@@ -281,10 +281,13 @@ void processMessage(String ip, String message)
   for (int x = 0; x < PegGrid.GRID_W; x++)
   {
     if (Integer.parseInt(String.valueOf(message.charAt(x))) == 1) {
-      if (config.usePaintColor) {
-         grid.setColorAtCoord(x, yidx, config.paintColor);
-      }else {
-        grid.nextColorAtCoord(x, yidx);  
+      if (message.contains("c")) {
+        grid.setRow(yidx, Colors.BLACK);
+        grid.setColorAtCoord(x, yidx, Colors.WHITE);
+      } else if (config.usePaintColor) {
+        grid.setColorAtCoord(x, yidx, config.paintColor);
+      } else {
+        grid.nextColorAtCoord(x, yidx);
       }
       if (config.captureUsageEnabled) {
         screenshot();

@@ -10,9 +10,10 @@
    The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
 */
 
-#define ROW_NUMBER   2
+#define ROW_NUMBER   1
 //The ROW_NUMBER will automatically configure the correct IP and unique MAC address.
 
+#include <EEPROM.h>
 #include <BitBool.h>
 
 // ****************************************
@@ -51,12 +52,17 @@ static uint32_t timer;
 //Width of data (how many ext lines).
 #define DATA_WIDTH   NUMBER_OF_SHIFT_CHIPS * 8
 
+#define NUM_ACTIVE_INPUTS 38
+
 // Width of pulse to trigger the shift register to read and latch.
 #define PULSE_WIDTH_USEC   5
 
 //Optional delay between shift register reads.
 #define POLL_DELAY_MSEC   10      //TODO 5/29 increased from 1ms. Going to see if that helps the double hit.
 #define BYTES_VAL_T unsigned long
+
+
+int configPin        = 9;  // Connects to the Clock pin the 1
 
 int ploadPin        = 8;  // Connects to Parallel load pin the 165
 int clockEnablePin  = 3;  // Connects to Clock Enable pin the 165
@@ -75,6 +81,16 @@ BitBool<DATA_WIDTH> oldDeltaPinValuesB;
 BitBool<DATA_WIDTH> pinValuesB;
 BitBool<DATA_WIDTH> oldPinValuesB;
 
+
+boolean isTraining = true;
+int activeMappingIndex = 0;
+byte buttonMapping[DATA_WIDTH];
+String calibrationString = "00000000000000000000000000000000000000";//String(DATA_WIDTH, '0');
+
+
+
+
+
 BitBool<DATA_WIDTH> pXOR(BitBool<DATA_WIDTH> x, BitBool<DATA_WIDTH> y)
 {
   BitBool<DATA_WIDTH> result;
@@ -82,7 +98,7 @@ BitBool<DATA_WIDTH> pXOR(BitBool<DATA_WIDTH> x, BitBool<DATA_WIDTH> y)
   {
     if ( x[i] ^ y[i] ) {
       result[i] = true;
-    }else{
+    } else {
       result[i] = false;
     }
   }
@@ -96,22 +112,91 @@ BitBool<DATA_WIDTH> pAND(BitBool<DATA_WIDTH> x, BitBool<DATA_WIDTH> y)
   {
     if ( x[i] & y[i] ) {
       result[i] = true;
-    }else{
+    } else {
       result[i] = false;
     }
   }
   return result;
 }
 
+void initMapping()
+{
+  for (int i = 0; i < DATA_WIDTH; i++)
+  {
+    buttonMapping[i] = i;
+  }
+}
+
+void printButtonMapping()
+{
+  for (int i = 0; i < DATA_WIDTH; i++)
+  {
+    Serial.println("Input[" + String(i) + "] == button[" + buttonMapping[i] + "]");
+  }
+}
+
+void startButtonTraining()
+{
+
+}
+
+String generateCalibrationString(int index)
+{
+  String output = "";
+  for (int i = 0; i < DATA_WIDTH; i++)
+  {
+    output += (i == index) ? "1" : "0";
+  }
+  //output += "c";
+  return output;
+}
+
+void endButtonTraining()
+{
+  isTraining = false;
+  Serial.println("Mapping complete.");
+  printButtonMapping();
+  //saveButtonMapping();
+}
+
+void readButtonMapping()
+{
+  Serial.println("Config: Reading mapping.");
+
+  if ( EEPROM.read ( 0 ) != 0xff ) {
+    for (int i = 0; i < DATA_WIDTH; ++i )
+      buttonMapping [ i ] = EEPROM.read ( i );
+  }
+  Serial.println("Config: Read.");
+}
+
+void saveButtonMapping()
+{
+  Serial.println("Config: Saving mapping.");
+  int eeAddress = 0;   //Location we want the data to be put.
+  for ( int i = 0; i < DATA_WIDTH; ++i ) {
+    EEPROM.write ( i, buttonMapping [ i ] );
+  }
+  Serial.println("Config: Saved.");
+}
+
 void setup () {
-  Serial.begin(250000);
+  Serial.begin(9600);
 
   Serial.println("ButtonNode: Starting...");
+
+  initMapping();
 
   initNetworking();
   initShiftRegisters();
 
+
+  initMapping();
+  printButtonMapping();
+  //saveButtonMapping();
+
   Serial.println("ButtonNode: Ready.");
+
 }
 
 void initNetworking()
@@ -149,6 +234,9 @@ void initShiftRegisters()
   pinMode(clockPin, OUTPUT);
   pinMode(dataPin, INPUT);
 
+  pinMode(configPin, INPUT);
+  digitalWrite(configPin, HIGH);
+
   digitalWrite(clockPin, LOW);
   digitalWrite(ploadPin, HIGH);
 
@@ -162,6 +250,8 @@ void initShiftRegisters()
 char textToSend[DATA_WIDTH];
 
 void loop () {
+
+  checkConfigButton();
   //REQUIRED. Handles low level network responses. Part of the MAC address fix.
   ether.packetLoop(ether.packetReceive());
 
@@ -193,7 +283,7 @@ void loop () {
 
   //tempPinValuesB = pinValuesB ^ oldPinValuesB;  // XOR the old and new
   tempPinValuesB = pXOR(pinValuesB, oldPinValuesB);  // XOR the old and new
-  
+
   //deltaPinValuesB = tempPinValuesB & pinValuesB;// AND the new and xor'd value to get only the changes to 1
   deltaPinValuesB = pAND(tempPinValuesB, pinValuesB);// AND the new and xor'd value to get only the changes to 1's.
 
@@ -241,21 +331,43 @@ void loop () {
     //We only want to broadcast data out if we are on a rising edge of a change.
     //Make sure that we are sending a toggle.
 
-    String deltaPinValsStr = create_pin_values_stringB(deltaPinValuesB);
-    if (deltaPinValsStr.indexOf('1') >= 0) {
-      Serial.print("SIGNIFICANT");
-      deltaPinValsStr.toCharArray(textToSend, DATA_WIDTH);
-      ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );
-    } else
+
+
+    if (isTraining)
     {
-      Serial.print("INSIGNIFICANT");
+      String deltaPinValsStr = create_pin_values_stringB(deltaPinValuesB);
+      if (deltaPinValsStr.indexOf('1') >= 0) {
+        Serial.println("SIGNIFICANT");
+
+        train(deltaPinValsStr);
+        /*
+          buttonMapping[activeMappingIndex++] = deltaPinValsStr.indexOf('1');
+          if (activeMappingIndex == DATA_WIDTH) {
+          //Configuration complete.
+          endButtonTraining();
+          }
+        */
+      } else {
+        Serial.println("INSIGNIFICANT");
+      }
+
+    } else {
+      String deltaPinValsStr = create_pin_values_stringB_calib(deltaPinValuesB);
+      if (deltaPinValsStr.indexOf('1') >= 0) {
+        deltaPinValsStr.toCharArray(textToSend, DATA_WIDTH);
+        ether.sendUdp(textToSend, sizeof(textToSend), srcPort, srip, dstPort );
+      }
+      else {
+        Serial.println("INSIGNIFICANT");
+      }
     }
-    Serial.println(" change detected.");
+
+    //Serial.println(" change detected.");
 
     oldPinValuesB = pinValuesB;
     oldDeltaPinValuesB = deltaPinValuesB;
   }
-  
+
   hasChanged = false;
   for (int i = 0; i < DATA_WIDTH; i++)
   {
@@ -264,7 +376,7 @@ void loop () {
       break;
     }
   }
-  
+
   if (hasChanged)
   {
     oldPinValuesB = pinValuesB;
@@ -301,9 +413,52 @@ void loop () {
     }
   */
 
+  //if (isTraining && hasChanged && (millis() > timer) ) {
+  /*
+    if (isTraining && hasChanged) {
+    //timer = millis() + 500;
+
+    calibrationString = generateCalibrationString(activeMappingIndex);
+
+    Serial.print("Sending calibration string: ");
+    Serial.println(calibrationString);
+    //Serial.println(ipToString(srip));
+
+    char calibrationTextToSend[calibrationString.length() + 1];
+
+    calibrationString.toCharArray(calibrationTextToSend, calibrationString.length());
+    ether.sendUdp(calibrationTextToSend, sizeof(calibrationTextToSend), srcPort, srip, dstPort );
+    }
+  */
   delay(POLL_DELAY_MSEC);
 
 }
+
+void train(String deltaPinValsStr)
+{
+  buttonMapping[activeMappingIndex] = deltaPinValsStr.indexOf('1');
+  
+  if (activeMappingIndex >= NUM_ACTIVE_INPUTS - 1) {
+  
+    //Configuration complete.
+    endButtonTraining();
+  }
+  calibrationString = generateCalibrationString(activeMappingIndex);
+
+  Serial.print("Sending calibration string: ");
+  Serial.println(calibrationString);
+  //Serial.println(ipToString(srip));
+
+  char calibrationTextToSend[calibrationString.length() + 1];
+
+  calibrationString.toCharArray(calibrationTextToSend, calibrationString.length());
+  ether.sendUdp(calibrationTextToSend, sizeof(calibrationTextToSend), srcPort, srip, dstPort );
+  
+  activeMappingIndex++;
+}
+
+
+
 
 // ****************************************
 // ****************************************
@@ -372,6 +527,17 @@ String create_pin_values_stringB(BitBool<DATA_WIDTH> values)
   {
     //Test simplifying.
     tempStr += values[i] ? "1" : "0";
+  }
+  return tempStr;
+}
+
+String create_pin_values_stringB_calib(BitBool<DATA_WIDTH> values)
+{
+  tempStr = "";
+  for (int i = 0; i < DATA_WIDTH; i++)
+  {
+    //Test simplifying.
+    tempStr += values[ buttonMapping[i] ] ? "1" : "0";
   }
   return tempStr;
 }
