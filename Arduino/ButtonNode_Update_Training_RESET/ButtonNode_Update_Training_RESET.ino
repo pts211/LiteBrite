@@ -10,7 +10,7 @@
    The destination IP can either be a specific device IP, or a broadcast (255.255.255.255).
 */
 
-#define ROW_NUMBER   9
+#define ROW_NUMBER   10
 boolean isTraining = false;
 
 //The ROW_NUMBER will automatically configure the correct IP and unique MAC address.
@@ -54,7 +54,7 @@ static uint32_t timer;
 //Width of data (how many ext lines).
 #define DATA_WIDTH   NUMBER_OF_SHIFT_CHIPS * 8
 
-#define NUM_ACTIVE_INPUTS 38
+#define NUM_ACTIVE_INPUTS 39
 
 // Width of pulse to trigger the shift register to read and latch.
 #define PULSE_WIDTH_USEC   5

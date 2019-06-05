@@ -278,9 +278,10 @@ void processMessage(String ip, String message)
   message = message.trim();
 
   //TODO Was using message.length, make sure that using the GRID_W works.
-  for (int x = 0; x < PegGrid.GRID_W; x++)
+  for (int x = 0; x < PegGrid.GRID_W + 1; x++)
   {
-    if (Integer.parseInt(String.valueOf(message.charAt(x))) == 1) {
+    if (Integer.parseInt(String.valueOf(message.charAt(x))) == 1 && x < PegGrid.GRID_W ) {
+      println("x:" + x);
       if (message.contains("c")) {
         grid.setRow(yidx, Colors.BLACK);
         grid.nextColorAtCoord(x, yidx);
@@ -294,7 +295,13 @@ void processMessage(String ip, String message)
         screenshot();
       }
     }
+    if (yidx == 9 && (Integer.parseInt(String.valueOf(message.charAt(38))) == 1)) {
+      println("CLEAR BUTTON PRESSED!");
+      pac.start();
+    }
   }
+  //if(message.length()
+
 }
 
 // ****************************************
