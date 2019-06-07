@@ -89,12 +89,6 @@ public void sld_scrollSpeed_change(GSlider source, GEvent event) { //_CODE_:sld_
   config.scrollSpeed = sld_scrollSpeed.getValueI();
 } //_CODE_:sld_scrollSpeed:237074:
 
-public void cbx_scrollingTextLoop_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_scrollingTextLoop:257090:
-  println("checkbox1 - GCheckbox >> GEvent." + event + " @ " + millis());
-  config.scrollingTextLoopEnabled = cbx_scrollingTextLoop.isSelected();
-  title.setLooping(config.scrollingTextLoopEnabled);
-} //_CODE_:cbx_scrollingTextLoop:257090:
-
 public void cbx_capture_time_clicked1(GCheckbox source, GEvent event) { //_CODE_:cbx_capture_time:805883:
   println("cbx_capture_time - GCheckbox >> GEvent." + event + " @ " + millis());
   config.captureUsageEnabled = cbx_capture_time.isSelected();
@@ -113,6 +107,11 @@ public void cbx_usePaint_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_
   println("cbx_usePaint - GCheckbox >> GEvent." + event + " @ " + millis());
   config.usePaintColor = cbx_usePaint.isSelected();
 } //_CODE_:cbx_usePaint:453036:
+
+public void cbx_write_csv_clicked1(GCheckbox source, GEvent event) { //_CODE_:cbx_write_csv:299993:
+  println("cbx_write_csv - GCheckbox >> GEvent." + event + " @ " + millis());
+  config.write_csv = cbx_write_csv.isSelected();
+} //_CODE_:cbx_write_csv:299993:
 
 
 
@@ -187,17 +186,13 @@ public void createGUI(){
   sld_scrollSpeed.setNumberFormat(G4P.INTEGER, 0);
   sld_scrollSpeed.setOpaque(false);
   sld_scrollSpeed.addEventHandler(this, "sld_scrollSpeed_change");
-  cbx_scrollingTextLoop = new GCheckbox(settings, 340, 250, 120, 20);
-  cbx_scrollingTextLoop.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
-  cbx_scrollingTextLoop.setText("Loop");
-  cbx_scrollingTextLoop.setOpaque(false);
-  cbx_scrollingTextLoop.addEventHandler(this, "cbx_scrollingTextLoop_clicked");
   cbx_capture_time = new GCheckbox(settings, 590, 520, 110, 30);
   cbx_capture_time.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   cbx_capture_time.setText("Capture Usage");
   cbx_capture_time.setOpaque(false);
   cbx_capture_time.addEventHandler(this, "cbx_capture_time_clicked1");
-  paintColor_view = new GView(settings, 330, 500, 80, 70, P3D);
+  cbx_capture_time.setSelected(true);
+  //paintColor_view = new GView(settings, 330, 500, 80, 70, P3D);
   sld_paintColor = new GSlider(settings, 20, 500, 310, 70, 30.0);
   sld_paintColor.setLimits(255, 0, 255);
   sld_paintColor.setNumberFormat(G4P.INTEGER, 0);
@@ -208,6 +203,12 @@ public void createGUI(){
   cbx_usePaint.setText("Use paint color");
   cbx_usePaint.setOpaque(false);
   cbx_usePaint.addEventHandler(this, "cbx_usePaint_clicked");
+  cbx_write_csv = new GCheckbox(settings, 589, 486, 117, 29);
+  cbx_write_csv.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  cbx_write_csv.setText("Write CSV");
+  cbx_write_csv.setOpaque(false);
+  cbx_write_csv.addEventHandler(this, "cbx_write_csv_clicked1");
+  cbx_write_csv.setSelected(true);
   settings.loop();
 }
 
@@ -227,8 +228,8 @@ GSlider sld_rainSpeed;
 GButton bttn_scrollingText; 
 GSlider sld_randPegSpeed; 
 GSlider sld_scrollSpeed; 
-GCheckbox cbx_scrollingTextLoop; 
 GCheckbox cbx_capture_time; 
 GView paintColor_view; 
 GSlider sld_paintColor; 
 GCheckbox cbx_usePaint; 
+GCheckbox cbx_write_csv; 

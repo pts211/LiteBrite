@@ -38,6 +38,38 @@ public class Peg
   {
     return this.c;
   }
+  
+  int getColorAsInt()
+  {
+    switch(this.c)
+    {
+    case Colors.RED:
+      println("RED");
+      return 1;
+    case Colors.GREEN:
+    println("RED");
+      return 2;
+    case Colors.BLUE:
+      return 3;
+    case Colors.MAGENTA:
+      return 4;
+    case Colors.YELLOW:
+      return 5;
+    case Colors.CYAN:
+      return 6;
+    case Colors.WHITE:
+      return 7;
+    case Colors.BLACK:
+      return 0;
+    default:
+      return -1;
+    }  
+  }
+  
+  float getColorAsHue()
+  {
+    return hue(this.c);
+  }
 
   void setColor(color c)
   {

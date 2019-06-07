@@ -57,7 +57,7 @@ ScrollingText title;
 
 
 void settings() {
-  size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO), P3D); //Don't even think about doing a print statement before this.
+  size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO)); //Don't even think about doing a print statement before this.
 }
 
 void setup()
@@ -70,10 +70,10 @@ void setup()
   initNetworking();
   loadImages();
 
-  pacman = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/pacman-animation-crop-tail.gif");
+  pacman = new Gif(this, "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/animated/pacman-animation-crop-tail.gif");
   pac = new AnimatedTransistion(pacman, 3, false);
 
-  blinky = new Gif(this, "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
+  blinky = new Gif(this, "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
   blink = new AnimatedTransistion(blinky, 3, true);
 
   //Test receiving a message.
@@ -120,7 +120,7 @@ void loadImages()
 {
   println("Controller: Loading Images.");
   //Image loading
-  String path = "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/images";
+  String path = "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/images";
   println("\tpath: " + path);
   String[] filenames = listFileNames(path);
   printArray(filenames);
@@ -192,6 +192,9 @@ void mousePressed()
   if ( peg != null) {
     if (config.captureUsageEnabled) {
       screenshot();
+    }
+    if (config.write_csv) {
+        grid.writeState();
     }
     if (config.rippleEnabled) {
       ripGen.addRipple(peg.getPoint(), peg.getColor());
@@ -294,6 +297,9 @@ void processMessage(String ip, String message)
       if (config.captureUsageEnabled) {
         screenshot();
       }
+      if (config.write_csv) {
+        grid.writeState();
+      }
     }
     if (yidx == 9 && (Integer.parseInt(String.valueOf(message.charAt(38))) == 1)) {
       println("CLEAR BUTTON PRESSED!");
@@ -301,7 +307,6 @@ void processMessage(String ip, String message)
     }
   }
   //if(message.length()
-
 }
 
 // ****************************************

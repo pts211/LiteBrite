@@ -22,9 +22,10 @@ public class Configuration
   public int textS = 0;
   
   
-  public boolean captureUsageEnabled = false;
+  public boolean captureUsageEnabled = true;
   
   public boolean usePaintColor = false;
+  public boolean write_csv = true;
   public color paintColor;
   
   Configuration() {

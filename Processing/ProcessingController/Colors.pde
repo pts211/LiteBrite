@@ -11,7 +11,8 @@ public static class Colors
   public final static int YELLOW = #ffff00;
   public final static int CYAN = #00ffff;
   public final static int WHITE = #ffffff;
-  public final static int BLACK = #000000;  
+  public final static int BROWN = #b76c09;
+    public final static int BLACK = #000000;  
 
   Colors() {
   }
@@ -33,6 +34,8 @@ public static class Colors
     case CYAN:
       return WHITE;
     case WHITE:
+      return BROWN;
+    case BROWN:
       return BLACK;
     case BLACK:
       return RED;

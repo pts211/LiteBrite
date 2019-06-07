@@ -13,6 +13,11 @@ public class PegGrid
 
   Peg[] pegs = new Peg[GRID_W*GRID_H];
 
+
+
+  PrintWriter output;
+
+
   PegGrid(PApplet parent, String ip, int port) {
     this.parent = parent;
     this.ip = ip;
@@ -31,6 +36,14 @@ public class PegGrid
       pegs[i] = new Peg(p, int(DIAMETER*0.9));
       //println("peg[" + i + "]: ( " + pegs[i].getX() + ", " + pegs[i].getY() + " )");
     }
+    String timestamp = str(month()) + str(day()) + str(hour()) + str(minute()) + str(second()) + str(millis());
+    output = createWriter("history" + timestamp + ".txt");
+  }
+  
+  private void outputRollover()
+  {
+    
+    
   }
 
   private void generateGrid()
@@ -50,8 +63,8 @@ public class PegGrid
     float c = cos(angle + HALF_PI);
     for (int i = 0; i < numStrips; i++) {
       //reversed = ((i % 2) == 1); //Use if alternating every row.
-      
-      if( i % 8 == 0){
+
+      if ( i % 8 == 0) {
         reversed = !reversed;
       }
       /*
@@ -109,7 +122,7 @@ public class PegGrid
       pegs[i].setColor(c);
     }
   }
-  
+
   public void setRow(int row, int c)
   {
     for (int i = 0; i < GRID_W; i++) {
@@ -117,7 +130,7 @@ public class PegGrid
       pegs[idx].setColor(c);
     }
   }
-  
+
   public void setCol(int col, int c)
   {
     for (int i = 0; i < GRID_W; i++) {
@@ -151,6 +164,17 @@ public class PegGrid
     for (int i = 0; i < pegs.length; i++) {
       pegs[i].setColor(Colors.randomColor());
     }
+  }
+
+  public void writeState()
+  {
+    for (int i = 0; i < pegs.length; i++) {
+      output.print(nf(pegs[i].getColorAsHue(), 0, 3) );
+      if (i != pegs.length-1) {
+        output.print(",");
+      }
+    }
+    output.println();
   }
 
   public void loadImg()
