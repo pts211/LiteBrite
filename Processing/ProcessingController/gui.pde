@@ -197,8 +197,7 @@ public void createGUI(){
   cbx_capture_time.setText("Capture Usage");
   cbx_capture_time.setOpaque(false);
   cbx_capture_time.addEventHandler(this, "cbx_capture_time_clicked1");
-  cbx_capture_time.setSelected(true);
-  //paintColor_view = new GView(settings, 330, 500, 80, 70, P3D);
+  paintColor_view = new GView(settings, 330, 500, 80, 70, P3D);
   sld_paintColor = new GSlider(settings, 20, 500, 310, 70, 30.0);
   sld_paintColor.setLimits(255, 0, 255);
   sld_paintColor.setNumberFormat(G4P.INTEGER, 0);

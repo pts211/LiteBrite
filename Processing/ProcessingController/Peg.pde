@@ -120,11 +120,13 @@ public class Peg
     r *= brightness;
     g *= brightness;
     b *= brightness;
+    
+    int global_brightness = 180;
 
     // The RGB values are constrained between 0 and 255 before being set as a new color.      
-    r = constrain(r, 0, 205); 
-    g = constrain(g, 0, 205);
-    b = constrain(b, 0, 205);
+    r = constrain(r, 0, global_brightness); 
+    g = constrain(g, 0, global_brightness);
+    b = constrain(b, 0, global_brightness);
 
     return color(r, g, b);
   }

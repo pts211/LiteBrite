@@ -122,7 +122,8 @@ void setup()
   //screensaver = new Screensaver("");
   screensaver.setPegs(grid.getPegs());
 
-  idleTimer = new Timer(5000);
+  idleTimer = new Timer(600000);
+  //idleTimer = new Timer(5000);
   idleTimer.start();
 
   //config.loadingSequenceEnabled = true;
