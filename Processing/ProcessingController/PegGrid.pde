@@ -39,12 +39,6 @@ public class PegGrid
     String timestamp = str(month()) + str(day()) + str(hour()) + str(minute()) + str(second()) + str(millis());
     output = createWriter("history" + timestamp + ".txt");
   }
-  
-  private void outputRollover()
-  {
-    
-    
-  }
 
   private void generateGrid()
   { 
@@ -169,7 +163,13 @@ public class PegGrid
   public void writeState()
   {
     for (int i = 0; i < pegs.length; i++) {
-      output.print(nf(pegs[i].getColorAsHue(), 0, 3) );
+      String hexStr = hex(pegs[i].getColor());
+      if ("FF000000".compareTo(hexStr) == 0) {
+        output.print("0");
+      } else {
+        output.print(hex(pegs[i].getColor()) );
+      }
+
       if (i != pegs.length-1) {
         output.print(",");
       }
@@ -216,6 +216,11 @@ public class PegGrid
    img.updatePixels();
    }
    */
+
+  public Peg[] getPegs()
+  {
+    return this.pegs;
+  }
 
   public void draw()
   {

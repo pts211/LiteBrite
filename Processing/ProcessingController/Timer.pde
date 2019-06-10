@@ -41,6 +41,7 @@ public class Timer
   void reset()
   {
     ticks = 0;
+    timer = millis() + interval;
   }
 
 

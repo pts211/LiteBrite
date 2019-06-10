@@ -37,6 +37,7 @@ AnimatedTransistion pac;
 Gif pacman;
 AnimatedTransistion blink;
 Gif blinky;
+Gif coffee;
 
 //Image loading
 int currentImg = -1;
@@ -55,6 +56,11 @@ LoadingBar loadingBar;
 //Scrolling Text
 ScrollingText title;
 
+//Screensaver
+Screensaver screensaver;
+
+Clock clock;
+Timer idleTimer;
 
 void settings() {
   size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO)); //Don't even think about doing a print statement before this.
@@ -67,6 +73,8 @@ void setup()
   println("Controller: Initializing Display Parameters. Done.");
   grid = new PegGrid(this, "127.0.0.1", 7890);
 
+  clock = new Clock();
+
   initNetworking();
   loadImages();
 
@@ -75,6 +83,12 @@ void setup()
 
   blinky = new Gif(this, "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
   blink = new AnimatedTransistion(blinky, 3, true);
+
+  coffee = new Gif(this, "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/animated/coffee_crop_invert_wide.gif");
+  coffee.loop();  
+  coffee.play();
+
+
 
   //Test receiving a message.
   /*
@@ -97,6 +111,19 @@ void setup()
   desktop = new DesktopViewer(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO));
 
   loadingBar = new LoadingBar();
+
+  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/historyWhiteTest.txt");
+  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/testHistory02.txt");
+  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/history66142011166.txt");
+  screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/history66123749157.txt");  //PAC MAN ghosts
+  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/historyWhiteTest.txt");
+  //screensaver = new Screensaver("");
+  //screensaver = new Screensaver("");
+  //screensaver = new Screensaver("");
+  screensaver.setPegs(grid.getPegs());
+
+  idleTimer = new Timer(5000);
+  idleTimer.start();
 
   //config.loadingSequenceEnabled = true;
   //startLoadingSequence();
@@ -134,6 +161,19 @@ void loadImages()
 
 void draw()
 {
+  if (idleTimer.update()) {
+    config.isIdle = true;
+  }
+  if (config.isIdle) {
+    clock.processTriggers();
+  }
+  if (config.isSleeping)
+  {
+    background(0);
+    return;
+  }
+
+
   background(0);
   grid.draw();
 
@@ -177,6 +217,15 @@ void draw()
   if (config.rainbowEnabled) {
     rainbowCycle();
   }
+  if (config.isMorning && config.isIdle)
+  {
+    image(coffee, width/2  - coffee.width*3/2, height / 2 - coffee.height*3/2, coffee.width * 3, coffee.height * 3);
+  } else if ( config.isIdle )
+  {
+    randomPegsScreensaver();
+    screensaver.draw();
+  }
+
   title.draw();
 }
 
@@ -187,6 +236,14 @@ void draw()
 // ****************************************
 void mousePressed()
 { 
+  idleTimer.reset();
+  if (config.isIdle || config.isSleeping) {
+    config.isIdle = false;
+    config.isSleeping = false;
+    return;
+  }
+
+
   Peg peg = grid.mousePressed(mouseX, mouseY);
 
   if ( peg != null) {
@@ -194,7 +251,7 @@ void mousePressed()
       screenshot();
     }
     if (config.write_csv) {
-        grid.writeState();
+      grid.writeState();
     }
     if (config.rippleEnabled) {
       ripGen.addRipple(peg.getPoint(), peg.getColor());
@@ -274,6 +331,12 @@ void receive( byte[] data, String ip, int port )  // <-- extended handler
 
 void processMessage(String ip, String message)
 {
+  idleTimer.reset();
+  if (config.isIdle || config.isSleeping) {
+    config.isIdle = false;
+    config.isSleeping = false;
+    return;
+  }
   String ystr = ip.substring(ip.lastIndexOf('.')+1, ip.length());
   int yidx = Integer.parseInt(ystr) - 1; //Change IP range to start at 1. 
   //println("yidx: " + yidx);

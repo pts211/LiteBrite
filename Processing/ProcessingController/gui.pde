@@ -113,6 +113,12 @@ public void cbx_write_csv_clicked1(GCheckbox source, GEvent event) { //_CODE_:cb
   config.write_csv = cbx_write_csv.isSelected();
 } //_CODE_:cbx_write_csv:299993:
 
+public void bttn_nextFrame_click(GButton source, GEvent event) { //_CODE_:bttn_nextFrame:823620:
+  println("bttn_nextFrame - GButton >> GEvent." + event + " @ " + millis());
+  
+  config.nextFrame = true;
+} //_CODE_:bttn_nextFrame:823620:
+
 
 
 // Create all the GUI controls. 
@@ -209,6 +215,9 @@ public void createGUI(){
   cbx_write_csv.setOpaque(false);
   cbx_write_csv.addEventHandler(this, "cbx_write_csv_clicked1");
   cbx_write_csv.setSelected(true);
+  bttn_nextFrame = new GButton(settings, 699, 445, 80, 30);
+  bttn_nextFrame.setText("Next Frame");
+  bttn_nextFrame.addEventHandler(this, "bttn_nextFrame_click");
   settings.loop();
 }
 
@@ -233,3 +242,4 @@ GView paintColor_view;
 GSlider sld_paintColor; 
 GCheckbox cbx_usePaint; 
 GCheckbox cbx_write_csv; 
+GButton bttn_nextFrame; 

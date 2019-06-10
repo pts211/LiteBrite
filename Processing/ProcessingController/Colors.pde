@@ -12,7 +12,7 @@ public static class Colors
   public final static int CYAN = #00ffff;
   public final static int WHITE = #ffffff;
   public final static int BROWN = #b76c09;
-    public final static int BLACK = #000000;  
+  public final static int BLACK = #000000;  
 
   Colors() {
   }
@@ -41,6 +41,33 @@ public static class Colors
       return RED;
     default:
       return Colors.WHITE;
+    }
+  }
+  
+  public static String getColorAsString(int input)
+  {
+    switch(input)
+    {
+    case RED:
+      return "RED";
+    case GREEN:
+      return "GREEN";
+    case BLUE:
+      return "BLUE";
+    case MAGENTA:
+      return "MAGENTA";
+    case YELLOW:
+      return "YELLOW";
+    case CYAN:
+      return "CYAN";
+    case WHITE:
+      return "WHITE";
+    case BROWN:
+      return "BROWN";
+    case BLACK:
+      return "BLACK";
+    default:
+      return "INVALID";
     }
   }
 

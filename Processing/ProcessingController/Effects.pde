@@ -9,6 +9,15 @@ void randomPegs()
   }
 }
 
+void randomPegsScreensaver()
+{
+  randomPegTimer.setInterval(config.randomPegSpeed);
+
+  if (randomPegTimer.update()) {
+    screensaver.setAllRandom();
+  }
+}
+
 void startLoadingSequence()
 {
   loadingBar.reset();
@@ -76,3 +85,72 @@ color Wheel(byte WheelPos) {
     return color(0, WheelPos * 3, 255 - WheelPos * 3);
   }
 }
+
+
+
+final double THRESHOLD = .01;
+
+
+public int getColorFromHue(float hue)
+{
+  String hueStr = nf(hue, 0, 3);
+  int startColor = Colors.RED;
+  int currentColor = startColor;
+  //nf(hue(color(currentColor)), 0, 3);
+  
+  if(hue == 0)
+  {
+   return 0; 
+  }
+  
+  do {
+    //String currentColorStr = nf(hue(color(currentColor)), 0, 3);
+    //println("currently comparing " + currentColorStr + " to " + hueStr);
+    if(nf(hue(color(currentColor)), 0, 3).compareTo(hueStr) == 0 ){
+      //println(Colors.getColorAsString(color(hue)) + " == " + Colors.getColorAsString(currentColor));
+      //println("Returning " + Colors.getColorAsString(currentColor));
+      return currentColor;
+    }
+    /*
+    if (Math.abs(hue - hue(color(currentColor)) ) < THRESHOLD) {
+      println(Colors.getColorAsString(color(hue)) + " == " + Colors.getColorAsString(currentColor));
+      //System.out.println("f1 and f2 are equal using threshold\n");
+      return currentColor;
+    } else {
+      //System.out.println("f1 and f2 are not equal using threshold\n");
+      println(Colors.getColorAsString(color(hue)) + " != " + Colors.getColorAsString(currentColor));
+    }
+*/
+
+
+    currentColor = Colors.nextColor(currentColor);
+  } while (currentColor != startColor);
+  return Colors.BLACK;
+}
+
+public color getColorFromEnum(int current)
+  {
+    switch(current)
+    {
+    case Colors.RED:
+      return color(Colors.RED);
+    case Colors.GREEN:
+      return color(Colors.BLUE);
+    case Colors.BLUE:
+      return color(Colors.MAGENTA);
+    case Colors.MAGENTA:
+      return color(Colors.YELLOW);
+    case Colors.YELLOW:
+      return color(Colors.CYAN);
+    case Colors.CYAN:
+      return color(Colors.WHITE);
+    case Colors.WHITE:
+      return color(Colors.BROWN);
+    case Colors.BROWN:
+      return color(Colors.BLACK);
+    case Colors.BLACK:
+      return color(Colors.RED);
+    default:
+      return color(Colors.WHITE);
+    }
+  }

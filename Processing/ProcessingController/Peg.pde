@@ -4,6 +4,7 @@ public class Peg
   int DIAMETER = 20;
   Point p;
   color c;
+  float hue;
   float brightness;
 
   Peg(Point p) {
@@ -17,6 +18,13 @@ public class Peg
     this.c = Colors.BLACK;
     this.DIAMETER = dia;
     this.brightness = 1.0;
+  }
+  
+  Peg(Peg p) {
+    this.p = p.p;
+    this.c = p.c;
+    this.DIAMETER = p.DIAMETER;
+    this.brightness = p.brightness;
   }
 
   Point getPoint()
@@ -38,7 +46,7 @@ public class Peg
   {
     return this.c;
   }
-  
+
   int getColorAsInt()
   {
     switch(this.c)
@@ -47,25 +55,32 @@ public class Peg
       println("RED");
       return 1;
     case Colors.GREEN:
-    println("RED");
+      println("GREEN");
       return 2;
     case Colors.BLUE:
+      println("BLUE");
       return 3;
     case Colors.MAGENTA:
+      println("MAGENTA");
       return 4;
     case Colors.YELLOW:
+      println("YELLOW");
       return 5;
     case Colors.CYAN:
+      println("CYAN");
       return 6;
     case Colors.WHITE:
+      println("WHITE");
       return 7;
     case Colors.BLACK:
+      println("BLACK");
       return 0;
     default:
       return -1;
-    }  
+    }
   }
   
+
   float getColorAsHue()
   {
     return hue(this.c);
@@ -74,6 +89,14 @@ public class Peg
   void setColor(color c)
   {
     this.c = c;
+  }
+
+  void setHue(float hue)
+  {
+    this.hue = hue;
+    //colorMode(HSB, 100, 255, 255);
+    //this.c = color(hue, 0, 255);
+    //colorMode(RGB, 255);
   }
 
   void nextColor()
@@ -99,11 +122,26 @@ public class Peg
     b *= brightness;
 
     // The RGB values are constrained between 0 and 255 before being set as a new color.      
-    r = constrain(r, 0, 255); 
-    g = constrain(g, 0, 255);
-    b = constrain(b, 0, 255);
-    
+    r = constrain(r, 0, 205); 
+    g = constrain(g, 0, 205);
+    b = constrain(b, 0, 205);
+
     return color(r, g, b);
+  }
+
+  void drawHue()
+  {
+    pushMatrix();
+    pushStyle();
+
+    fill(this.hue);
+
+    stroke(#ffffff);
+    ellipse(p.getX(), p.getY(), DIAMETER, DIAMETER);
+    //stroke(#ffffff);
+    //arc(p.getX(), p.getY(), DIAMETER, DIAMETER, 0, 2*3.14159);
+    popMatrix();
+    popStyle();
   }
 
   void draw()
@@ -113,7 +151,7 @@ public class Peg
 
     color dispColor = calcColor();
     fill(dispColor);
-    
+
     stroke(#ffffff);
     ellipse(p.getX(), p.getY(), DIAMETER, DIAMETER);
     //stroke(#ffffff);

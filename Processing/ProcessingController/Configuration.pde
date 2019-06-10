@@ -1,6 +1,9 @@
 
 public class Configuration
 {
+  public boolean isIdle = false;
+  public boolean isSleeping = false;
+  public boolean isMorning = false;
   
   public boolean loadingSequenceEnabled = false;
 
@@ -9,7 +12,7 @@ public class Configuration
   
   
   public boolean randomPegsEnabled = false;
-  public int randomPegSpeed = 0;
+  public int randomPegSpeed = 1000;
   
   public boolean rainbowEnabled = false;
   public float rainbowSpeed = 0;
@@ -22,11 +25,13 @@ public class Configuration
   public int textS = 0;
   
   
-  public boolean captureUsageEnabled = true;
+  public boolean captureUsageEnabled = false;
+  public boolean write_csv = true;
   
   public boolean usePaintColor = false;
-  public boolean write_csv = true;
   public color paintColor;
+  
+  public boolean nextFrame = false;
   
   Configuration() {
   }
