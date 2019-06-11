@@ -94,20 +94,6 @@ public void cbx_capture_time_clicked1(GCheckbox source, GEvent event) { //_CODE_
   config.captureUsageEnabled = cbx_capture_time.isSelected();
 } //_CODE_:cbx_capture_time:805883:
 
-public void sld_paintColor_change1(GSlider source, GEvent event) { //_CODE_:sld_paintColor:615317:
-  //println("slider1 - GSlider >> GEvent." + event + " @ " + millis());
-  int rc = sld_paintColor.getValueI();
-  colorMode(HSB, 255);
-  updatePaintColorView(color(rc, 255, 255));
-  config.paintColor = color(rc, 255, 255);
-  colorMode(RGB, 255);
-} //_CODE_:sld_paintColor:615317:
-
-public void cbx_usePaint_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_usePaint:453036:
-  println("cbx_usePaint - GCheckbox >> GEvent." + event + " @ " + millis());
-  config.usePaintColor = cbx_usePaint.isSelected();
-} //_CODE_:cbx_usePaint:453036:
-
 public void cbx_write_csv_clicked1(GCheckbox source, GEvent event) { //_CODE_:cbx_write_csv:299993:
   println("cbx_write_csv - GCheckbox >> GEvent." + event + " @ " + millis());
   config.write_csv = cbx_write_csv.isSelected();
@@ -118,6 +104,11 @@ public void bttn_nextFrame_click(GButton source, GEvent event) { //_CODE_:bttn_n
   
   config.nextFrame = true;
 } //_CODE_:bttn_nextFrame:823620:
+
+public void cbx_playbackEnabled_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_playbackEnabled:468477:
+  println("cbx_playbackEnabled - GCheckbox >> GEvent." + event + " @ " + millis());
+  config.playbackEnabled = cbx_playbackEnabled.isSelected();
+} //_CODE_:cbx_playbackEnabled:468477:
 
 
 
@@ -197,17 +188,6 @@ public void createGUI(){
   cbx_capture_time.setText("Capture Usage");
   cbx_capture_time.setOpaque(false);
   cbx_capture_time.addEventHandler(this, "cbx_capture_time_clicked1");
-  paintColor_view = new GView(settings, 330, 500, 80, 70, P3D);
-  sld_paintColor = new GSlider(settings, 20, 500, 310, 70, 30.0);
-  sld_paintColor.setLimits(255, 0, 255);
-  sld_paintColor.setNumberFormat(G4P.INTEGER, 0);
-  sld_paintColor.setOpaque(false);
-  sld_paintColor.addEventHandler(this, "sld_paintColor_change1");
-  cbx_usePaint = new GCheckbox(settings, 20, 480, 120, 20);
-  cbx_usePaint.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
-  cbx_usePaint.setText("Use paint color");
-  cbx_usePaint.setOpaque(false);
-  cbx_usePaint.addEventHandler(this, "cbx_usePaint_clicked");
   cbx_write_csv = new GCheckbox(settings, 589, 486, 117, 29);
   cbx_write_csv.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   cbx_write_csv.setText("Write CSV");
@@ -217,6 +197,15 @@ public void createGUI(){
   bttn_nextFrame = new GButton(settings, 699, 445, 80, 30);
   bttn_nextFrame.setText("Next Frame");
   bttn_nextFrame.addEventHandler(this, "bttn_nextFrame_click");
+  label_playack = new GLabel(settings, 10, 370, 80, 20);
+  label_playack.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
+  label_playack.setText("Playback");
+  label_playack.setOpaque(false);
+  cbx_playbackEnabled = new GCheckbox(settings, 10, 400, 120, 20);
+  cbx_playbackEnabled.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  cbx_playbackEnabled.setText("Play Recording");
+  cbx_playbackEnabled.setOpaque(false);
+  cbx_playbackEnabled.addEventHandler(this, "cbx_playbackEnabled_clicked");
   settings.loop();
 }
 
@@ -237,8 +226,7 @@ GButton bttn_scrollingText;
 GSlider sld_randPegSpeed; 
 GSlider sld_scrollSpeed; 
 GCheckbox cbx_capture_time; 
-GView paintColor_view; 
-GSlider sld_paintColor; 
-GCheckbox cbx_usePaint; 
 GCheckbox cbx_write_csv; 
 GButton bttn_nextFrame; 
+GLabel label_playack; 
+GCheckbox cbx_playbackEnabled; 

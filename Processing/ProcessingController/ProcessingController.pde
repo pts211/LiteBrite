@@ -56,8 +56,13 @@ LoadingBar loadingBar;
 //Scrolling Text
 ScrollingText title;
 
-//Screensaver
-Screensaver screensaver;
+//GhostPegGrid - This peg grid is not persisted to the display. It is just an overlay. 
+GhostPegGrid ghostGrid;
+
+
+GridRecorder recorder;
+//Recording playback
+Playback player;
 
 Clock clock;
 Timer idleTimer;
@@ -77,53 +82,31 @@ void setup()
 
   initNetworking();
   loadImages();
-
-  pacman = new Gif(this, "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/animated/pacman-animation-crop-tail.gif");
-  pac = new AnimatedTransistion(pacman, 3, false);
-
-  blinky = new Gif(this, "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/animated/blinky-animation-crop.gif");
-  blink = new AnimatedTransistion(blinky, 3, true);
-
-  coffee = new Gif(this, "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/animated/coffee_crop_invert_wide.gif");
-  coffee.loop();  
-  coffee.play();
-
-
-
-  //Test receiving a message.
-  /*
-  processMessage("192.168.1.1", "10000001000000000000001000000000000000");
-   processMessage("192.168.1.2", "10000001000000000000001000000000000000");
-   processMessage("192.168.1.3", "10000001000000000000001000000000000000");
-   processMessage("192.168.1.4", "10000001000000000000001000000000000000");
-   processMessage("192.168.1.5", "10000001000000000000001000000000000000");
-   */
-
-  //userScreen = new UserScreen();
+  loadGifs();
 
   //Ripples
   ripGen = new RippleGenerator(400);
 
   createGUI();
   customGUI();
+
   config = new Configuration();
 
   desktop = new DesktopViewer(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO));
 
   loadingBar = new LoadingBar();
 
-  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/historyWhiteTest.txt");
-  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/testHistory02.txt");
-  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/history66142011166.txt");
-  screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/history66123749157.txt");  //PAC MAN ghosts
-  //screensaver = new Screensaver("/home/robot/Desktop/timelapses/csv_data/historyWhiteTest.txt");
-  //screensaver = new Screensaver("");
-  //screensaver = new Screensaver("");
-  //screensaver = new Screensaver("");
-  screensaver.setPegs(grid.getPegs());
+  ghostGrid = new GhostPegGrid();
+  ghostGrid.setPegs(grid.getPegs());
 
-  idleTimer = new Timer(600000);
-  //idleTimer = new Timer(5000);
+  recorder = new GridRecorder();
+  recorder.setPegs(grid.getPegs());
+
+  player = new Playback("/Users/ps022648/Desktop/LiteBrite_Capture/history69212652157.txt");
+  player.setPegs(grid.getPegs());
+
+
+  idleTimer = new Timer(5, UnitTime.MINUTE);
   idleTimer.start();
 
   //config.loadingSequenceEnabled = true;
@@ -148,7 +131,8 @@ void loadImages()
 {
   println("Controller: Loading Images.");
   //Image loading
-  String path = "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/images";
+  //String path = "/home/robot/Desktop/LiteBrite/Processing/ProcessingController/images";
+  String path = dataPath("../images");
   println("\tpath: " + path);
   String[] filenames = listFileNames(path);
   printArray(filenames);
@@ -158,6 +142,19 @@ void loadImages()
     imgs[i] = loadImage(path+"/"+filenames[i]);
   }
   println("Controller: Loading Images. Done.");
+}
+
+void loadGifs()
+{
+  pacman = new Gif(this, dataPath("../animated/pacman-animation-crop-tail.gif"));
+  pac = new AnimatedTransistion(pacman, 3, false);
+
+  blinky = new Gif(this, dataPath("../animated/blinky-animation-crop.gif"));
+  blink = new AnimatedTransistion(blinky, 3, true);
+
+  coffee = new Gif(this, dataPath("../animated/coffee_crop_invert_wide.gif"));
+  coffee.loop();  
+  coffee.play();
 }
 
 void draw()
@@ -218,13 +215,17 @@ void draw()
   if (config.rainbowEnabled) {
     rainbowCycle();
   }
+  if (config.playbackEnabled) {
+    player.draw();
+  }
+  
   if (config.isMorning && config.isIdle)
   {
     image(coffee, width/2  - coffee.width*3/2, height / 2 - coffee.height*3/2, coffee.width * 3, coffee.height * 3);
   } else if ( config.isIdle )
   {
     randomPegsScreensaver();
-    screensaver.draw();
+    ghostGrid.draw();
   }
 
   title.draw();
@@ -252,7 +253,7 @@ void mousePressed()
       screenshot();
     }
     if (config.write_csv) {
-      grid.writeState();
+      recorder.captureState();
     }
     if (config.rippleEnabled) {
       ripGen.addRipple(peg.getPoint(), peg.getColor());
@@ -265,9 +266,13 @@ void keyPressed()
   switch(key)
   {
   case 'c':
+    recorder.captureClear();
+    recorder.startNewFile();
     pac.start();
     break;
   case 'C':
+    recorder.captureClear();
+    recorder.startNewFile();
     blink.start();
     break;
   case 'r':
@@ -289,6 +294,8 @@ void keyPressed()
     nextImage();
     break;
   case 'o':
+    recorder.captureClear();
+    recorder.startNewFile();
     grid.setAll(Colors.BLACK);
     break;
   case 'S':  
@@ -362,15 +369,21 @@ void processMessage(String ip, String message)
         screenshot();
       }
       if (config.write_csv) {
-        grid.writeState();
+        recorder.captureState();
       }
     }
     if (yidx == 9 && (Integer.parseInt(String.valueOf(message.charAt(38))) == 1)) {
       println("CLEAR BUTTON PRESSED!");
-      pac.start();
+      recorder.captureClear();
+      recorder.startNewFile();
+      
+      if(random(100) > 50){
+        pac.start(); 
+      }else{
+        blink.start();
+      }
     }
   }
-  //if(message.length()
 }
 
 // ****************************************
@@ -411,12 +424,4 @@ void screenshot()
 // Use this method to add additional statements
 // to customise the GUI controls
 public void customGUI() {
-}
-
-// Update the view graphic
-public void updatePaintColorView(color newcolor) {
-  PGraphics v = paintColor_view.getGraphics();
-  v.beginDraw();
-  v.background(newcolor);
-  v.endDraw();
 }

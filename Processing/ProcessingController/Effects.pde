@@ -14,8 +14,35 @@ void randomPegsScreensaver()
   randomPegTimer.setInterval(config.randomPegSpeed);
 
   if (randomPegTimer.update()) {
-    screensaver.setAllRandom();
+    ghostGrid.setAllRandom();
   }
+}
+
+float rc;
+void rainbowCycle()
+{
+  rc = (rc >= 255) ? (0) : (rc + config.rainbowSpeed);
+
+  colorMode(HSB, 255);
+  for (int i=0; i < PegGrid.GRID_W; i++) {
+    for (int j=0; j < PegGrid.GRID_H; j++) {
+      grid.setColorAtCoord(i, j, color(rc, 255, 255));
+    }
+  }
+  colorMode(RGB, 255);
+}
+
+void rainbowCycleScreensaver()
+{
+  rc = (rc >= 255) ? (0) : (rc + config.rainbowSpeed);
+
+  colorMode(HSB, 255);
+  for (int i=0; i < PegGrid.GRID_W; i++) {
+    for (int j=0; j < PegGrid.GRID_H; j++) {
+      ghostGrid.setColorAtCoord(i, j, color(rc, 255, 255));
+    }
+  }
+  colorMode(RGB, 255);
 }
 
 void startLoadingSequence()
@@ -59,21 +86,6 @@ void loadScreen()
   }
 }
 
-float rc;
-void rainbowCycle()
-{
-  rc = (rc >= 255) ? (0) : (rc + config.rainbowSpeed);
-
-  colorMode(HSB, 255);
-  for (int i=0; i < PegGrid.GRID_W; i++) {
-    for (int j=0; j < PegGrid.GRID_H; j++) {
-      grid.setColorAtCoord(i, j, color(rc, 255, 255));
-    }
-  }
-  colorMode(RGB, 255);
-}
-
-
 color Wheel(byte WheelPos) {
   if (WheelPos < 85) {
     return color(WheelPos * 3, 255 - WheelPos * 3, 0);
@@ -89,8 +101,6 @@ color Wheel(byte WheelPos) {
 
 
 final double THRESHOLD = .01;
-
-
 public int getColorFromHue(float hue)
 {
   String hueStr = nf(hue, 0, 3);
@@ -127,30 +137,3 @@ public int getColorFromHue(float hue)
   } while (currentColor != startColor);
   return Colors.BLACK;
 }
-
-public color getColorFromEnum(int current)
-  {
-    switch(current)
-    {
-    case Colors.RED:
-      return color(Colors.RED);
-    case Colors.GREEN:
-      return color(Colors.BLUE);
-    case Colors.BLUE:
-      return color(Colors.MAGENTA);
-    case Colors.MAGENTA:
-      return color(Colors.YELLOW);
-    case Colors.YELLOW:
-      return color(Colors.CYAN);
-    case Colors.CYAN:
-      return color(Colors.WHITE);
-    case Colors.WHITE:
-      return color(Colors.BROWN);
-    case Colors.BROWN:
-      return color(Colors.BLACK);
-    case Colors.BLACK:
-      return color(Colors.RED);
-    default:
-      return color(Colors.WHITE);
-    }
-  }

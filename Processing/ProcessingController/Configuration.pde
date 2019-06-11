@@ -10,6 +10,7 @@ public class Configuration
   public boolean rippleEnabled = false;
   public boolean showDesktop = false;
   
+  public boolean playbackEnabled = false;
   
   public boolean randomPegsEnabled = false;
   public int randomPegSpeed = 1000;
