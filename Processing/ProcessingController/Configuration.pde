@@ -1,6 +1,25 @@
 
 public class Configuration
 {
+  // ********** CONSTANTS ********** //
+  
+  
+  //IdleTimer: This timer is used to wait a reasonable long time
+  // so someones designs can be visible before going to a screensaver.
+  public final int IDLE_TIMEOUT = 10;
+  public final int IDLE_TIMEOUT_UNIT = UnitTime.MINUTE;
+  
+  //ShortIdleTimer: This timer is used to test if someone is actually using the LiteBrite
+  // or if it was just a walkby press. If it's a walkby, we want to fairly quickly switch
+  // back to the screensaver.
+  public final int SHORT_IDLE_TIMEOUT = 10;
+  public final int SHORT_IDLE_TIMEOUT_UNIT = UnitTime.SECOND;
+  
+  // The minium number of presses required in the short idle timeout period to
+  // consider the LiteBrite "in use" so it doesn't go back to the screensaver.
+  public final int MIN_ACTIVITY = 20;
+  
+  
   public boolean isIdle = false;
   public boolean isSleeping = false;
   public boolean isMorning = false;
@@ -16,7 +35,7 @@ public class Configuration
   public int randomPegSpeed = 1000;
   
   public boolean rainbowEnabled = false;
-  public float rainbowSpeed = 0;
+  public float rainbowSpeed = 0.5;
   
   public boolean scrollingTextLoopEnabled = false;
   

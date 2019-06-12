@@ -70,6 +70,18 @@ public class GridRecorder
     captureHeader();
     output.println("clear");
   }
+  
+  public void captureWake()
+  {
+    captureHeader();
+    output.println("wake");
+  }
+  
+  public void captureSleep()
+  {
+    captureHeader();
+    output.println("sleep");
+  }
 
   private void captureHeader()
   {

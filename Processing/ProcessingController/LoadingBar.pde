@@ -61,16 +61,19 @@ public class LoadingBar
 
   void start()
   {
+    timer.start();
     isLoading = true;
   }
 
   void stop()
   {
+    timer.stop();
     isLoading = false;
   }
 
   void reset()
   {
+    timer.reset();
     isLoading = false;
     count = 0;
     percent = 0;

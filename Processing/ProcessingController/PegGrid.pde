@@ -13,11 +13,6 @@ public class PegGrid
 
   Peg[] pegs = new Peg[GRID_W*GRID_H];
 
-
-
-  PrintWriter output;
-
-
   PegGrid(PApplet parent, String ip, int port) {
     this.parent = parent;
     this.ip = ip;
@@ -36,8 +31,6 @@ public class PegGrid
       pegs[i] = new Peg(p, int(DIAMETER*0.9));
       //println("peg[" + i + "]: ( " + pegs[i].getX() + ", " + pegs[i].getY() + " )");
     }
-    String timestamp = str(month()) + str(day()) + str(hour()) + str(minute()) + str(second()) + str(millis());
-    output = createWriter("history" + timestamp + ".txt");
   }
 
   private void generateGrid()
@@ -158,23 +151,6 @@ public class PegGrid
     for (int i = 0; i < pegs.length; i++) {
       pegs[i].setColor(Colors.randomColor());
     }
-  }
-
-  public void writeState()
-  {
-    for (int i = 0; i < pegs.length; i++) {
-      String hexStr = hex(pegs[i].getColor());
-      if ("FF000000".compareTo(hexStr) == 0) {
-        output.print("0");
-      } else {
-        output.print(hex(pegs[i].getColor()) );
-      }
-
-      if (i != pegs.length-1) {
-        output.print(",");
-      }
-    }
-    output.println();
   }
 
   public void loadImg()

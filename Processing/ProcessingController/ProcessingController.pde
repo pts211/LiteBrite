@@ -11,6 +11,7 @@ final float ASPECT_RATIO = float(PegGrid.GRID_W)/float(PegGrid.GRID_H);
 //Port to listen to for button presses.
 final int INPUT_PORT = 6000;
 
+
 Configuration config;
 
 //Desktop Display
@@ -62,10 +63,11 @@ GhostPegGrid ghostGrid;
 
 GridRecorder recorder;
 //Recording playback
-Playback player;
+//Playback player;
 
 Clock clock;
 Timer idleTimer;
+Timer shortIdleTimer;
 
 void settings() {
   size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO)); //Don't even think about doing a print statement before this.
@@ -75,10 +77,18 @@ void setup()
 {
   colorMode(RGB, 100);
   //frameRate(30);
-  println("Controller: Initializing Display Parameters. Done.");
+  println("Controller: Initializing Display Parameters. Done.");  
   grid = new PegGrid(this, "127.0.0.1", 7890);
 
+  config = new Configuration();
+
   clock = new Clock();
+
+  idleTimer = new Timer(config.IDLE_TIMEOUT, config.IDLE_TIMEOUT_UNIT);
+  idleTimer.start();
+
+  shortIdleTimer = new Timer(config.SHORT_IDLE_TIMEOUT, config.SHORT_IDLE_TIMEOUT_UNIT);
+  shortIdleTimer.start();
 
   initNetworking();
   loadImages();
@@ -90,8 +100,6 @@ void setup()
   createGUI();
   customGUI();
 
-  config = new Configuration();
-
   desktop = new DesktopViewer(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO));
 
   loadingBar = new LoadingBar();
@@ -102,17 +110,18 @@ void setup()
   recorder = new GridRecorder();
   recorder.setPegs(grid.getPegs());
 
-  player = new Playback("/Users/ps022648/Desktop/LiteBrite_Capture/history69212652157.txt");
-  player.setPegs(grid.getPegs());
+  //player = new Playback("/Users/ps022648/Desktop/LiteBrite_Capture/history69212652157.txt");
+  //player.setPegs(grid.getPegs());
 
 
-  idleTimer = new Timer(5, UnitTime.MINUTE);
-  idleTimer.start();
+
 
   //config.loadingSequenceEnabled = true;
   //startLoadingSequence();
 
   title = new ScrollingText();
+  
+  startEffectTimers();
 }
 
 void initNetworking()
@@ -159,6 +168,12 @@ void loadGifs()
 
 void draw()
 {
+  if ( shortIdleTimer.update() ) {
+    if ( pressesSinceIdle < config.MIN_ACTIVITY ) {
+      config.isIdle = true;
+    }
+  }
+
   if (idleTimer.update()) {
     config.isIdle = true;
   }
@@ -216,9 +231,9 @@ void draw()
     rainbowCycle();
   }
   if (config.playbackEnabled) {
-    player.draw();
+    //player.draw();
   }
-  
+
   if (config.isMorning && config.isIdle)
   {
     image(coffee, width/2  - coffee.width*3/2, height / 2 - coffee.height*3/2, coffee.width * 3, coffee.height * 3);
@@ -231,6 +246,24 @@ void draw()
   title.draw();
 }
 
+boolean processIdleTimers()
+{
+
+  shortIdleTimer.reset();
+  idleTimer.reset();
+  if (config.isIdle || config.isSleeping) {
+    config.isIdle = false;
+    config.isSleeping = false;
+
+    pressesSinceIdle = 0;
+    recorder.captureWake();
+    return true;
+  }
+  pressesSinceIdle++;
+
+  return false;
+}
+
 // ****************************************
 // ****************************************
 //        Input Handlers
@@ -238,13 +271,9 @@ void draw()
 // ****************************************
 void mousePressed()
 { 
-  idleTimer.reset();
-  if (config.isIdle || config.isSleeping) {
-    config.isIdle = false;
-    config.isSleeping = false;
+  if ( processIdleTimers() ) {
     return;
   }
-
 
   Peg peg = grid.mousePressed(mouseX, mouseY);
 
@@ -263,17 +292,23 @@ void mousePressed()
 
 void keyPressed()
 {
+  if ( processIdleTimers() ) {
+    return;
+  }
+
   switch(key)
   {
   case 'c':
     recorder.captureClear();
     recorder.startNewFile();
     pac.start();
+    shortIdleTimer.start();
     break;
   case 'C':
     recorder.captureClear();
     recorder.startNewFile();
     blink.start();
+    shortIdleTimer.start();
     break;
   case 'r':
     grid.setAll(Colors.RED);
@@ -337,14 +372,13 @@ void receive( byte[] data, String ip, int port )  // <-- extended handler
   processMessage(ip, message);
 }
 
+int pressesSinceIdle = 0;
 void processMessage(String ip, String message)
 {
-  idleTimer.reset();
-  if (config.isIdle || config.isSleeping) {
-    config.isIdle = false;
-    config.isSleeping = false;
+  if ( processIdleTimers() ) {
     return;
   }
+
   String ystr = ip.substring(ip.lastIndexOf('.')+1, ip.length());
   int yidx = Integer.parseInt(ystr) - 1; //Change IP range to start at 1. 
   //println("yidx: " + yidx);
@@ -376,12 +410,13 @@ void processMessage(String ip, String message)
       println("CLEAR BUTTON PRESSED!");
       recorder.captureClear();
       recorder.startNewFile();
-      
-      if(random(100) > 50){
-        pac.start(); 
-      }else{
+
+      if (random(100) > 50) {
+        pac.start();
+      } else {
         blink.start();
       }
+      shortIdleTimer.start();
     }
   }
 }

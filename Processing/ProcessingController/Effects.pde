@@ -1,4 +1,11 @@
 Timer randomPegTimer = new Timer(200);
+Timer actionTimer = new Timer(400);
+
+void startEffectTimers()
+{
+  randomPegTimer.start();
+  actionTimer.start();
+}
 
 void randomPegs()
 {
@@ -52,7 +59,7 @@ void startLoadingSequence()
   actionTimer.start();
 }
 
-Timer actionTimer = new Timer(400);
+
 void loadScreen()
 {
   if (loadingBar.isLoading()) {

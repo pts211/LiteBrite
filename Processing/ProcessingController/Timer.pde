@@ -52,6 +52,7 @@ public class Timer
   void start()
   {
     isEnabled = true;
+    timer = millis() + interval;
   }
 
   void stop()
@@ -71,8 +72,10 @@ public class Timer
       timer = millis() + interval;
       if (isEnabled) {
         ticks++;
+        return true;
+      } else {
+        return false;
       }
-      return true;
     } else {
       return false;
     }
