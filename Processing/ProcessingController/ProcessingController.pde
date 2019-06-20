@@ -120,7 +120,7 @@ void setup()
   //startLoadingSequence();
 
   title = new ScrollingText();
-  
+
   startEffectTimers();
 }
 
@@ -172,6 +172,7 @@ void draw()
     if ( pressesSinceIdle < config.MIN_ACTIVITY ) {
       config.isIdle = true;
     }
+    //println("pressesSinceIdle: " + pressesSinceIdle);
   }
 
   if (idleTimer.update()) {
@@ -261,6 +262,8 @@ boolean processIdleTimers()
   }
   pressesSinceIdle++;
 
+
+
   return false;
 }
 
@@ -303,12 +306,14 @@ void keyPressed()
     recorder.startNewFile();
     pac.start();
     shortIdleTimer.start();
+    pressesSinceIdle = 0;
     break;
   case 'C':
     recorder.captureClear();
     recorder.startNewFile();
     blink.start();
     shortIdleTimer.start();
+    pressesSinceIdle = 0;
     break;
   case 'r':
     grid.setAll(Colors.RED);
@@ -379,6 +384,7 @@ void processMessage(String ip, String message)
     return;
   }
 
+
   String ystr = ip.substring(ip.lastIndexOf('.')+1, ip.length());
   int yidx = Integer.parseInt(ystr) - 1; //Change IP range to start at 1. 
   //println("yidx: " + yidx);
@@ -410,13 +416,9 @@ void processMessage(String ip, String message)
       println("CLEAR BUTTON PRESSED!");
       recorder.captureClear();
       recorder.startNewFile();
-
-      if (random(100) > 50) {
-        pac.start();
-      } else {
-        blink.start();
-      }
+      pac.start();
       shortIdleTimer.start();
+      pressesSinceIdle = 0;
     }
   }
 }

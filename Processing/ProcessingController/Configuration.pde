@@ -6,7 +6,7 @@ public class Configuration
   
   //IdleTimer: This timer is used to wait a reasonable long time
   // so someones designs can be visible before going to a screensaver.
-  public final int IDLE_TIMEOUT = 10;
+  public final int IDLE_TIMEOUT = 20;
   public final int IDLE_TIMEOUT_UNIT = UnitTime.MINUTE;
   
   //ShortIdleTimer: This timer is used to test if someone is actually using the LiteBrite
@@ -17,7 +17,7 @@ public class Configuration
   
   // The minium number of presses required in the short idle timeout period to
   // consider the LiteBrite "in use" so it doesn't go back to the screensaver.
-  public final int MIN_ACTIVITY = 20;
+  public final int MIN_ACTIVITY = 10;
   
   
   public boolean isIdle = false;
