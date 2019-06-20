@@ -11,7 +11,8 @@ public class PlaybackManager
   Playback activePlayback;
 
   PlaybackManager() {
-    this.path = "/Users/ps022648/Desktop/LiteBrite_Capture/20190611-20190620/current";
+    //this.path = "/Users/ps022648/Desktop/LiteBrite_Capture/20190611-20190620/current";
+    this.path = "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/recordings/favorites";
     this.files = loadFiles(path);
   }
 

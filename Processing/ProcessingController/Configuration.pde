@@ -35,7 +35,7 @@ public class Configuration
   public boolean randomPegsEnabled = false;
   public int randomPegSpeed = 1000;
   
-  public String favoriteRecordingSaveDir = "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/recordings/favorites";
+  public String favoriteRecordingSaveDir = "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/recordings";
   
   public boolean rainbowEnabled = false;
   public float rainbowSpeed = 0.5;

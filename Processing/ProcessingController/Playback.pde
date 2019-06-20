@@ -9,6 +9,7 @@ public class Playback
 
   String path;
   String filename;
+  boolean endOfFile = false;
 
   FileInputStream inputStream = null;
   Scanner sc = null;
@@ -30,10 +31,15 @@ public class Playback
 
   void loadNewFile(String newFile)
   {
-    once = false;
+    endOfFile = false;
     closeFile();
     this.path = newFile;
     loadFile();
+  }
+  
+  boolean isFinished()
+  {
+    return endOfFile;
   }
 
   private void loadFile()
@@ -53,7 +59,6 @@ public class Playback
     }
   }
 
-  boolean once = false;
   String getFrame()
   {
     String line = "";
@@ -63,15 +68,15 @@ public class Playback
         line = sc.nextLine();
         // System.out.println(line);
       } else {
-        if (!once) {
-          once = true;
+        if (!endOfFile) {
+          endOfFile = true;
           println("END OF FILE.");
         }
         break;
       }
     } 
-    
-    
+
+
     return line;
   }
 
@@ -109,9 +114,9 @@ public class Playback
     if (updateCycle)
     {
       String line = "";
-      
-      for(int i = 0; i < config.playbackSpeed; i++){
-       line = getFrame(); 
+
+      for (int i = 0; i < config.playbackSpeed; i++) {
+        line = getFrame();
       }
 
       //println("Updating hues: " + timer.getTicks() + " " + line);
@@ -125,13 +130,15 @@ public class Playback
       {
         if (hexColors.length == pegs.length) {
           j = i;     //if the row doesn't have a timestamp.
+          int c = unhex(hexColors[j]);
+          pegs[i].setColor( c );
         } else if (hexColors.length == pegs.length + 1) {
           j = i + 1; //if the row has a timestamp.
+          int c = unhex(hexColors[j]);
+          pegs[i].setColor( c );
         } else {
-          break;      //if the size is wrong. Maybe it was a bad write.
+          //break;      //if the size is wrong. Maybe it was a bad write.
         }
-        int c = unhex(hexColors[j]);
-        pegs[i].setColor( c );
       }
       pegs[i].draw();
     }
