@@ -121,6 +121,7 @@ public void btn_recNext_click(GButton source, GEvent event) { //_CODE_:btn_recNe
 
 public void btn_recSave_click(GButton source, GEvent event) { //_CODE_:btn_recSave:355911:
   println("btn_recSave - GButton >> GEvent." + event + " @ " + millis());
+  saveRecordingFile();
 } //_CODE_:btn_recSave:355911:
 
 public void btn_recRestart_click(GButton source, GEvent event) { //_CODE_:btn_recRestart:787149:

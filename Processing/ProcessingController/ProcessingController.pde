@@ -19,6 +19,11 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.awt.Rectangle;
 
+import java.nio.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+
 // import UDP library
 import hypermedia.net.*;
 import gifAnimation.*;
@@ -116,8 +121,7 @@ void setup()
   playManager = new PlaybackManager();
   playManager.listFiles();
 
-  //player = new Playback(playManager.getActiveFilePath());
-  player = new Playback("/Users/ps022648/Desktop/LiteBrite_Capture/litebrite_week1_2019061/merged_csv_20190613_clean_pixels.txt");
+  player = new Playback(playManager.getActiveFilePath());
   player.setPegs(grid.getPegs());
 
 
@@ -392,6 +396,21 @@ void decreasePlaybackSpeed()
 
   lbl_recSpeed.setText(config.playbackSpeed + "X");
   lbl_recSpeed.setTextBold();
+}
+
+void saveRecordingFile()
+{
+  String saveDir = config.favoriteRecordingSaveDir;
+  File src = playManager.getActiveFile();
+
+  //src.getName();
+  try{
+    Files.copy(src.toPath(), Paths.get(saveDir + "/" + src.getName()));  
+  }catch(Exception e){
+     //TODO
+     println(e);
+  }
+  
 }
 
 // ****************************************

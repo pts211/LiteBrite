@@ -24,10 +24,19 @@ public class PlaybackManager
   {
     return files[activeFileIdx].getAbsolutePath();
   }
+  
+  File getActiveFile()
+  {
+    return files[activeFileIdx];
+  }
 
   String nextFilePath() {
     if ( ++activeFileIdx >= files.length) {
-      activeFileIdx = 0;
+      println("END OF FILE LIST");
+      println("END OF FILE LIST");
+      println("END OF FILE LIST");
+      println("END OF FILE LIST");
+      activeFileIdx--;
     }
     println(files[activeFileIdx].getAbsolutePath());
     return files[activeFileIdx].getAbsolutePath();
