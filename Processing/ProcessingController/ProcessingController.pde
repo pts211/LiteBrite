@@ -391,6 +391,7 @@ void processMessage(String ip, String message)
 
   message = message.trim();
 
+  boolean hasClearedOnce = false;
   //TODO Was using message.length, make sure that using the GRID_W works.
   for (int x = 0; x < PegGrid.GRID_W + 1; x++)
   {
@@ -412,8 +413,9 @@ void processMessage(String ip, String message)
         recorder.captureState();
       }
     }
-    if (yidx == 9 && (Integer.parseInt(String.valueOf(message.charAt(38))) == 1)) {
+    if (!hasClearedOnce && yidx == 9 && (Integer.parseInt(String.valueOf(message.charAt(38))) == 1)) {
       println("CLEAR BUTTON PRESSED!");
+      hasClearedOnce = true;
       recorder.captureClear();
       recorder.startNewFile();
       pac.start();
