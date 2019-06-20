@@ -62,8 +62,10 @@ GhostPegGrid ghostGrid;
 
 
 GridRecorder recorder;
+
 //Recording playback
-//Playback player;
+PlaybackManager playManager;
+Playback player;
 
 Clock clock;
 Timer idleTimer;
@@ -110,8 +112,13 @@ void setup()
   recorder = new GridRecorder();
   recorder.setPegs(grid.getPegs());
 
-  //player = new Playback("/Users/ps022648/Desktop/LiteBrite_Capture/history69212652157.txt");
-  //player.setPegs(grid.getPegs());
+
+  playManager = new PlaybackManager();
+  playManager.listFiles();
+
+  //player = new Playback(playManager.getActiveFilePath());
+  player = new Playback("/Users/ps022648/Desktop/LiteBrite_Capture/litebrite_week1_2019061/merged_csv_20190613_clean_pixels.txt");
+  player.setPegs(grid.getPegs());
 
 
 
@@ -232,7 +239,8 @@ void draw()
     rainbowCycle();
   }
   if (config.playbackEnabled) {
-    //player.draw();
+    processIdleTimers();
+    player.draw();
   }
 
   if (config.isMorning && config.isIdle)
@@ -245,6 +253,7 @@ void draw()
   }
 
   title.draw();
+  tf_playbackDir.setText(playManager.getActiveFilePath());
 }
 
 boolean processIdleTimers()
@@ -333,6 +342,9 @@ void keyPressed()
   case 'n':
     nextImage();
     break;
+  case 'N':
+    updatePlayback();
+    break;
   case 'o':
     recorder.captureClear();
     recorder.startNewFile();
@@ -347,6 +359,39 @@ void keyPressed()
   default:
     break;
   }
+}
+
+
+// Playback Control Functions
+
+void restartPlayback()
+{
+  player.loadNewFile(playManager.getActiveFilePath());
+}
+
+void updatePlayback()
+{
+  String newRecordingPath = playManager.nextFilePath();
+  player.loadNewFile(newRecordingPath);
+}
+
+void increasePlaybackSpeed()
+{
+  config.playbackSpeed *= 2;
+
+  lbl_recSpeed.setText(config.playbackSpeed + "X");
+  lbl_recSpeed.setTextBold();
+}
+
+void decreasePlaybackSpeed()
+{
+  config.playbackSpeed /= 2;
+  if (config.playbackSpeed <= 0) {
+    config.playbackSpeed = 1;
+  }
+
+  lbl_recSpeed.setText(config.playbackSpeed + "X");
+  lbl_recSpeed.setTextBold();
 }
 
 // ****************************************

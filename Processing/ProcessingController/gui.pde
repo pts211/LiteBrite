@@ -110,6 +110,34 @@ public void cbx_playbackEnabled_clicked(GCheckbox source, GEvent event) { //_COD
   config.playbackEnabled = cbx_playbackEnabled.isSelected();
 } //_CODE_:cbx_playbackEnabled:468477:
 
+public void tf_playbackDir_change(GTextField source, GEvent event) { //_CODE_:tf_playbackDir:460242:
+  
+} //_CODE_:tf_playbackDir:460242:
+
+public void btn_recNext_click(GButton source, GEvent event) { //_CODE_:btn_recNext:993897:
+  println("btn_recNext - GButton >> GEvent." + event + " @ " + millis());
+  updatePlayback();
+} //_CODE_:btn_recNext:993897:
+
+public void btn_recSave_click(GButton source, GEvent event) { //_CODE_:btn_recSave:355911:
+  println("btn_recSave - GButton >> GEvent." + event + " @ " + millis());
+} //_CODE_:btn_recSave:355911:
+
+public void btn_recRestart_click(GButton source, GEvent event) { //_CODE_:btn_recRestart:787149:
+  println("btn_recRestart - GButton >> GEvent." + event + " @ " + millis());
+  restartPlayback();
+} //_CODE_:btn_recRestart:787149:
+
+public void btn_recSpeedDec_click(GButton source, GEvent event) { //_CODE_:btn_recSpeedDec:354671:
+  println("btn_recSpeedDec - GButton >> GEvent." + event + " @ " + millis());
+  decreasePlaybackSpeed();
+} //_CODE_:btn_recSpeedDec:354671:
+
+public void btn_recSpeedInc_click(GButton source, GEvent event) { //_CODE_:btn_recSpeedInc:686569:
+  println("btn_recSpeedInc - GButton >> GEvent." + event + " @ " + millis());
+  increasePlaybackSpeed();
+} //_CODE_:btn_recSpeedInc:686569:
+
 
 
 // Create all the GUI controls. 
@@ -194,7 +222,7 @@ public void createGUI(){
   cbx_write_csv.setOpaque(false);
   cbx_write_csv.addEventHandler(this, "cbx_write_csv_clicked1");
   cbx_write_csv.setSelected(true);
-  bttn_nextFrame = new GButton(settings, 699, 445, 80, 30);
+  bttn_nextFrame = new GButton(settings, 700, 430, 80, 30);
   bttn_nextFrame.setText("Next Frame");
   bttn_nextFrame.addEventHandler(this, "bttn_nextFrame_click");
   label_playack = new GLabel(settings, 10, 370, 80, 20);
@@ -206,6 +234,30 @@ public void createGUI(){
   cbx_playbackEnabled.setText("Play Recording");
   cbx_playbackEnabled.setOpaque(false);
   cbx_playbackEnabled.addEventHandler(this, "cbx_playbackEnabled_clicked");
+  tf_playbackDir = new GTextField(settings, 10, 430, 680, 30, G4P.SCROLLBARS_NONE);
+  tf_playbackDir.setText("Playback Directory");
+  tf_playbackDir.setOpaque(true);
+  tf_playbackDir.addEventHandler(this, "tf_playbackDir_change");
+  btn_recNext = new GButton(settings, 100, 470, 80, 30);
+  btn_recNext.setText("Next Recording");
+  btn_recNext.addEventHandler(this, "btn_recNext_click");
+  btn_recSave = new GButton(settings, 190, 470, 80, 30);
+  btn_recSave.setText("Save Recording");
+  btn_recSave.addEventHandler(this, "btn_recSave_click");
+  btn_recRestart = new GButton(settings, 10, 470, 80, 30);
+  btn_recRestart.setText("Restart Recording");
+  btn_recRestart.addEventHandler(this, "btn_recRestart_click");
+  btn_recSpeedDec = new GButton(settings, 340, 470, 50, 30);
+  btn_recSpeedDec.setText("Slower");
+  btn_recSpeedDec.addEventHandler(this, "btn_recSpeedDec_click");
+  btn_recSpeedInc = new GButton(settings, 480, 470, 50, 30);
+  btn_recSpeedInc.setText("Faster");
+  btn_recSpeedInc.addEventHandler(this, "btn_recSpeedInc_click");
+  lbl_recSpeed = new GLabel(settings, 390, 470, 90, 30);
+  lbl_recSpeed.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
+  lbl_recSpeed.setText("1X");
+  lbl_recSpeed.setTextBold();
+  lbl_recSpeed.setOpaque(false);
   settings.loop();
 }
 
@@ -230,3 +282,10 @@ GCheckbox cbx_write_csv;
 GButton bttn_nextFrame; 
 GLabel label_playack; 
 GCheckbox cbx_playbackEnabled; 
+GTextField tf_playbackDir; 
+GButton btn_recNext; 
+GButton btn_recSave; 
+GButton btn_recRestart; 
+GButton btn_recSpeedDec; 
+GButton btn_recSpeedInc; 
+GLabel lbl_recSpeed; 

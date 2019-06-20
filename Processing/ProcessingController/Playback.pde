@@ -28,7 +28,15 @@ public class Playback
     }
   }
 
-  void loadFile()
+  void loadNewFile(String newFile)
+  {
+    once = false;
+    closeFile();
+    this.path = newFile;
+    loadFile();
+  }
+
+  private void loadFile()
   {
     println("Loading file: " + this.path);
     try {
@@ -49,20 +57,26 @@ public class Playback
   String getFrame()
   {
     String line = "";
-    if (sc.hasNextLine()) {
-      line = sc.nextLine();
-      // System.out.println(line);
-    } else {
-      if (!once) {
-        once = true;
-        println("END OF FILE.");
+    while (line == "" || line.contains("clear") || line.contains("wake") )
+    {
+      if (sc.hasNextLine()) {
+        line = sc.nextLine();
+        // System.out.println(line);
+      } else {
+        if (!once) {
+          once = true;
+          println("END OF FILE.");
+        }
+        break;
       }
-    }
+    } 
+    
+    
     return line;
   }
 
 
-  void closeFile()
+  private void closeFile()
   {
     try {
       if (inputStream != null) {
@@ -91,23 +105,30 @@ public class Playback
     boolean updateCycle = timer.update(); 
     String[] hexColors = null;
 
+
     if (updateCycle)
     {
-      //println("Updating hues: " + timer.getTicks());
-      hexColors = getFrame().split(",");
+      String line = "";
+      
+      for(int i = 0; i < config.playbackSpeed; i++){
+       line = getFrame(); 
+      }
+
+      //println("Updating hues: " + timer.getTicks() + " " + line);
+      hexColors = line.split(",");
     }
 
 
     for (int i = 0; i < pegs.length; i++) {
-    int j = 0;
+      int j = 0;
       if (updateCycle)
       {
         if (hexColors.length == pegs.length) {
-          j = i;     //if the row doesn't have a timestamp. 
-        }else if (hexColors.length + 1 == pegs.length) {
+          j = i;     //if the row doesn't have a timestamp.
+        } else if (hexColors.length == pegs.length + 1) {
           j = i + 1; //if the row has a timestamp.
-        }else {
-         break;      //if the size is wrong. Maybe it was a bad write.
+        } else {
+          break;      //if the size is wrong. Maybe it was a bad write.
         }
         int c = unhex(hexColors[j]);
         pegs[i].setColor( c );

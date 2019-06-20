@@ -30,6 +30,7 @@ public class Configuration
   public boolean showDesktop = false;
   
   public boolean playbackEnabled = false;
+  public int playbackSpeed = 1;
   
   public boolean randomPegsEnabled = false;
   public int randomPegSpeed = 1000;
