@@ -30,7 +30,7 @@ public class Clock
 
     if ( hour >= 6 && hour < 10 )
     {
-      config.isMorning = true;
+      config.isMorning = false;
     }else{
       config.isMorning = false;
     }

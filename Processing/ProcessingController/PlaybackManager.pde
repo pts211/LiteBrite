@@ -7,12 +7,13 @@ public class PlaybackManager
   String path;
   File[] files;
   int activeFileIdx = 0;
-  
+
   Playback activePlayback;
 
   PlaybackManager() {
     //this.path = "/Users/ps022648/Desktop/LiteBrite_Capture/20190611-20190620/current";
-    this.path = "/Users/ps022648/Desktop/DevCon/GIT/LiteBrite/Processing/ProcessingController/recordings/favorites";
+    this.path = dataPath("../../../" + config.RELATIVE_PLAYBACK_DIRETCTORY);
+    println("path: " + this.path);
     this.files = loadFiles(path);
   }
 
@@ -20,15 +21,43 @@ public class PlaybackManager
     this.path = directory;
     this.files = loadFiles(path);
   }
+  
+  void refreshFiles()
+  {
+    this.files = loadFiles(path);
+    this.activeFileIdx = 0;
+  }
+
+  void setRandomIndex()
+  {
+    activeFileIdx = int( random(0, files.length-1) );
+  }
 
   String getActiveFilePath()
   {
     return files[activeFileIdx].getAbsolutePath();
   }
-  
+
+  String getActiveFileName()
+  {
+    return files[activeFileIdx].getName();
+  }
+
   File getActiveFile()
   {
     return files[activeFileIdx];
+  }
+  
+  String previousFilePath() {
+    if ( --activeFileIdx < 0) {
+      println("END OF FILE LIST");
+      println("END OF FILE LIST");
+      println("END OF FILE LIST");
+      println("END OF FILE LIST");
+      activeFileIdx = files.length - 1;
+    }
+    println(files[activeFileIdx].getAbsolutePath());
+    return files[activeFileIdx].getAbsolutePath();
   }
 
   String nextFilePath() {
@@ -37,7 +66,7 @@ public class PlaybackManager
       println("END OF FILE LIST");
       println("END OF FILE LIST");
       println("END OF FILE LIST");
-      activeFileIdx--;
+      activeFileIdx = 0;
     }
     println(files[activeFileIdx].getAbsolutePath());
     return files[activeFileIdx].getAbsolutePath();

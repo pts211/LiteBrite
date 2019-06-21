@@ -25,6 +25,21 @@ void randomPegsScreensaver()
   }
 }
 
+boolean workPlaybackOnce = false;
+void workPlaybackScreensaver()
+{
+
+  if ( player.isFinished() && !workPlaybackOnce ) {
+    workDisplayTimer.start();
+    workPlaybackOnce = true;
+  } else if ( workDisplayTimer.update() ) {
+    workDisplayTimer.stop();
+    updatePlayback();
+    workPlaybackOnce = false;
+  }
+  player.draw();
+}
+
 float rc;
 void rainbowCycle()
 {
@@ -114,30 +129,30 @@ public int getColorFromHue(float hue)
   int startColor = Colors.RED;
   int currentColor = startColor;
   //nf(hue(color(currentColor)), 0, 3);
-  
-  if(hue == 0)
+
+  if (hue == 0)
   {
-   return 0; 
+    return 0;
   }
-  
+
   do {
     //String currentColorStr = nf(hue(color(currentColor)), 0, 3);
     //println("currently comparing " + currentColorStr + " to " + hueStr);
-    if(nf(hue(color(currentColor)), 0, 3).compareTo(hueStr) == 0 ){
+    if (nf(hue(color(currentColor)), 0, 3).compareTo(hueStr) == 0 ) {
       //println(Colors.getColorAsString(color(hue)) + " == " + Colors.getColorAsString(currentColor));
       //println("Returning " + Colors.getColorAsString(currentColor));
       return currentColor;
     }
     /*
     if (Math.abs(hue - hue(color(currentColor)) ) < THRESHOLD) {
-      println(Colors.getColorAsString(color(hue)) + " == " + Colors.getColorAsString(currentColor));
-      //System.out.println("f1 and f2 are equal using threshold\n");
-      return currentColor;
-    } else {
-      //System.out.println("f1 and f2 are not equal using threshold\n");
-      println(Colors.getColorAsString(color(hue)) + " != " + Colors.getColorAsString(currentColor));
-    }
-*/
+     println(Colors.getColorAsString(color(hue)) + " == " + Colors.getColorAsString(currentColor));
+     //System.out.println("f1 and f2 are equal using threshold\n");
+     return currentColor;
+     } else {
+     //System.out.println("f1 and f2 are not equal using threshold\n");
+     println(Colors.getColorAsString(color(hue)) + " != " + Colors.getColorAsString(currentColor));
+     }
+     */
 
 
     currentColor = Colors.nextColor(currentColor);

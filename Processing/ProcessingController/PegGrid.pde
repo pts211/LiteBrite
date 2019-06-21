@@ -11,12 +11,16 @@ public class PegGrid
   String ip = "127.0.0.1";
   int port = 7890;
 
+  Point brushPeg;
+
   Peg[] pegs = new Peg[GRID_W*GRID_H];
 
   PegGrid(PApplet parent, String ip, int port) {
     this.parent = parent;
     this.ip = ip;
     this.port = port;
+
+    this.brushPeg = new Point(0, 0); //Defaulting brush peg to top right of the board.
 
     //parent.registerDraw(this);
 
@@ -30,6 +34,49 @@ public class PegGrid
       Point p = opc.getLocationByIndex(i);
       pegs[i] = new Peg(p, int(DIAMETER*0.9));
       //println("peg[" + i + "]: ( " + pegs[i].getX() + ", " + pegs[i].getY() + " )");
+    }
+  }
+
+  void setBrushPeg(int x, int y)
+  {
+    this.brushPeg = new Point(x, y);
+  }
+
+  void nextBrushPegColor()
+  {
+    int idx = getIndexAtPoint(brushPeg.getX(), brushPeg.getY());
+    pegs[idx].nextColor();
+    config.paintColor = pegs[idx].getColor();
+    println("setting brush peg");
+    resetBrushes();
+  }
+
+  color getBrushPegColor()
+  {
+    return getColorAtCoord(brushPeg.getX(), brushPeg.getY());
+  }
+
+  boolean isBrushPeg(int idx)
+  {
+    if( idx == getIndexAtPoint(brushPeg.getX(),brushPeg.getY()) )
+    {
+     return true; 
+    }
+    return false;
+  }
+
+  boolean isBrushPeg(int x, int y)
+  {
+    if (brushPeg.getX() == x && brushPeg.getY() == y) {
+      return true;
+    }
+    return false;
+  }
+
+  void resetBrushes()
+  {
+    for (int i = 0; i < pegs.length; i++) {
+      pegs[i].resetBrush();
     }
   }
 
@@ -100,7 +147,11 @@ public class PegGrid
 
   public void nextColorAtIdx(int idx)
   {
-    pegs[idx].nextColor();
+    if (config.usePaintColor) {
+      pegs[idx].nextColorBrush();
+    } else {
+      pegs[idx].nextColor();
+    }
   }
 
   public void setAll(int c)  
@@ -217,10 +268,11 @@ public class PegGrid
 
       if (containmentCheck(mP, pP, DIAMETER/2)) {
         println("Clicked peg " + i + "."); 
-        if (config.usePaintColor) {
-          colorMode(HSB, 255);
-          pegs[i].setColor(config.paintColor);
-          colorMode(RGB, 255);
+        if ( isBrushPeg(i) ) {
+          println("Mouse clicked brush");
+          nextBrushPegColor();
+        } else if (config.usePaintColor) {
+          pegs[i].nextColorBrush();
         } else {
           pegs[i].nextColor();
         }

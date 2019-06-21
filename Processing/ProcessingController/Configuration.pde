@@ -20,6 +20,14 @@ public class Configuration
   public final int MIN_ACTIVITY = 10;
   
   
+  //WorkDisplayTimer: This timer is how long the LiteBrite leaves someones recorded
+  //design visible before going on to the next one.
+  public final int WORKDISPLAY_TIMEOUT = 5;
+  public final int WORKDISPLAY_TIMEOUT_UNIT = UnitTime.SECOND;
+  
+  public final String RELATIVE_PLAYBACK_DIRETCTORY = "../favorites";
+  
+  
   public boolean isIdle = false;
   public boolean isSleeping = false;
   public boolean isMorning = false;
@@ -28,6 +36,7 @@ public class Configuration
 
   public boolean rippleEnabled = false;
   public boolean showDesktop = false;
+ 
   
   public boolean playbackEnabled = false;
   public int playbackSpeed = 1;

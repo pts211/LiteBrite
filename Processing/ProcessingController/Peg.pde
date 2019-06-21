@@ -7,6 +7,8 @@ public class Peg
   float hue;
   float brightness;
 
+  boolean usedPaintBrush = false;
+
   Peg(Point p) {
     this.p = p;
     this.c = Colors.BLACK;
@@ -19,7 +21,7 @@ public class Peg
     this.DIAMETER = dia;
     this.brightness = 1.0;
   }
-  
+
   Peg(Peg p) {
     this.p = p.p;
     this.c = p.c;
@@ -79,7 +81,7 @@ public class Peg
       return -1;
     }
   }
-  
+
 
   float getColorAsHue()
   {
@@ -97,6 +99,21 @@ public class Peg
     //colorMode(HSB, 100, 255, 255);
     //this.c = color(hue, 0, 255);
     //colorMode(RGB, 255);
+  }
+  
+  void resetBrush()
+  {
+    usedPaintBrush = false;
+  }
+
+  void nextColorBrush()
+  {
+    if (usedPaintBrush) {
+      nextColor();
+    }else{
+     this.c = config.paintColor;
+     usedPaintBrush = true;
+    }
   }
 
   void nextColor()
@@ -120,7 +137,7 @@ public class Peg
     r *= brightness;
     g *= brightness;
     b *= brightness;
-    
+
     int global_brightness = 180;
 
     // The RGB values are constrained between 0 and 255 before being set as a new color.      

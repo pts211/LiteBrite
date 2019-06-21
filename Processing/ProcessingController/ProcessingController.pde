@@ -48,7 +48,7 @@ Gif coffee;
 //Image loading
 int currentImg = -1;
 boolean hasDrawn = false;
-PImage[] imgs;
+List<PImage> imgs;
 
 //Ripples
 RippleGenerator ripGen;
@@ -75,6 +75,7 @@ Playback player;
 Clock clock;
 Timer idleTimer;
 Timer shortIdleTimer;
+Timer workDisplayTimer;
 
 void settings() {
   size(SCREEN_WIDTH, int(SCREEN_WIDTH/ASPECT_RATIO)); //Don't even think about doing a print statement before this.
@@ -96,6 +97,8 @@ void setup()
 
   shortIdleTimer = new Timer(config.SHORT_IDLE_TIMEOUT, config.SHORT_IDLE_TIMEOUT_UNIT);
   shortIdleTimer.start();
+
+  workDisplayTimer = new Timer(config.WORKDISPLAY_TIMEOUT, config.WORKDISPLAY_TIMEOUT_UNIT);
 
   initNetworking();
   loadImages();
@@ -120,6 +123,7 @@ void setup()
 
   playManager = new PlaybackManager();
   playManager.listFiles();
+  playManager.setRandomIndex();
 
   player = new Playback(playManager.getActiveFilePath());
   player.setPegs(grid.getPegs());
@@ -157,9 +161,15 @@ void loadImages()
   String[] filenames = listFileNames(path);
   printArray(filenames);
 
-  imgs = new PImage[filenames.length];
+
+  imgs = new ArrayList();
   for (int i = 0; i < filenames.length; i++) {
-    imgs[i] = loadImage(path+"/"+filenames[i]);
+    String filename = filenames[i].toUpperCase();
+    if ( filename.contains(".JPG") 
+      || filename.contains(".PNG") 
+      || filename.contains(".GIF") ) {
+      imgs.add(loadImage(path+"/"+filenames[i]));
+    }
   }
   println("Controller: Loading Images. Done.");
 }
@@ -187,6 +197,7 @@ void draw()
   }
 
   if (idleTimer.update()) {
+    updatePlayback();
     config.isIdle = true;
   }
   if (config.isIdle) {
@@ -215,14 +226,14 @@ void draw()
   //We only want to draw the image to the screen once to load the image data into
   //the pegs. That way the image can be changed by clicking a peg.
   if (currentImg != -1 && !hasDrawn) {
-
+    grid.setAllOff();
     //If we load a saved LiteBrite image then we don't ant to scale it.
-    PImage img = imgs[currentImg];
+    PImage img = imgs.get(currentImg);
     img.resize(width, height);
 
     imageMode(CENTER);
     image(img, width/2, height/2);
-    hasDrawn = true;
+    hasDrawn = true; 
     grid.loadImg();
   }
 
@@ -231,15 +242,19 @@ void draw()
     ripGen.draw();
   }
   if (config.showDesktop) {
+    processIdleTimers();
     desktop.draw();
   }
   if (config.randomPegsEnabled) {
+    processIdleTimers();
     randomPegs();
   }
   if (config.loadingSequenceEnabled) {
+    processIdleTimers();
     loadScreen();
   }
   if (config.rainbowEnabled) {
+    processIdleTimers();
     rainbowCycle();
   }
   if (config.playbackEnabled) {
@@ -252,12 +267,13 @@ void draw()
     image(coffee, width/2  - coffee.width*3/2, height / 2 - coffee.height*3/2, coffee.width * 3, coffee.height * 3);
   } else if ( config.isIdle )
   {
-    randomPegsScreensaver();
-    ghostGrid.draw();
+    //randomPegsScreensaver();
+    //ghostGrid.draw();
+    workPlaybackScreensaver();
   }
 
   title.draw();
-  tf_playbackDir.setText(playManager.getActiveFilePath());
+  tf_playbackDir.setText(playManager.getActiveFileName());
 }
 
 boolean processIdleTimers()
@@ -379,6 +395,12 @@ void updatePlayback()
   player.loadNewFile(newRecordingPath);
 }
 
+void previousPlayback()
+{
+  String newRecordingPath = playManager.previousFilePath();
+  player.loadNewFile(newRecordingPath);
+}
+
 void increasePlaybackSpeed()
 {
   config.playbackSpeed *= 2;
@@ -404,13 +426,13 @@ void saveRecordingFile()
   File src = playManager.getActiveFile();
 
   //src.getName();
-  try{
-    Files.copy(src.toPath(), Paths.get(saveDir + "/" + src.getName()));  
-  }catch(Exception e){
-     //TODO
-     println(e);
+  try {
+    Files.copy(src.toPath(), Paths.get(saveDir + "/" + src.getName()));
   }
-  
+  catch(Exception e) {
+    //TODO
+    println(e);
+  }
 }
 
 // ****************************************
@@ -447,10 +469,9 @@ void processMessage(String ip, String message)
   if ( processIdleTimers() ) {
     return;
   }
-
-
+  
   String ystr = ip.substring(ip.lastIndexOf('.')+1, ip.length());
-  int yidx = Integer.parseInt(ystr) - 1; //Change IP range to start at 1. 
+  int yidx = Integer.parseInt(ystr) - 1; //Change IP range to start at 1.
   //println("yidx: " + yidx);
 
   message = message.trim();
@@ -465,8 +486,8 @@ void processMessage(String ip, String message)
         grid.setRow(yidx, Colors.BLACK);
         grid.nextColorAtCoord(x, yidx);
         grid.nextColorAtCoord(x, yidx);
-      } else if (config.usePaintColor) {
-        grid.setColorAtCoord(x, yidx, config.paintColor);
+      } else if (grid.isBrushPeg(x, yidx) ) {
+        grid.nextBrushPegColor();
       } else {
         grid.nextColorAtCoord(x, yidx);
       }
@@ -482,7 +503,13 @@ void processMessage(String ip, String message)
       hasClearedOnce = true;
       recorder.captureClear();
       recorder.startNewFile();
-      pac.start();
+
+      if ( random(100) > 50 ) {
+        pac.start();
+      } else {
+        blink.start();
+      }
+
       shortIdleTimer.start();
       pressesSinceIdle = 0;
     }
@@ -507,7 +534,7 @@ String[] listFileNames(String dir) {
 void nextImage()
 {
   currentImg++;
-  if (currentImg >= imgs.length) {
+  if (currentImg >= imgs.size() ) {
     currentImg = -1;
   }
   hasDrawn = false;

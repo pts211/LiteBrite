@@ -139,6 +139,16 @@ public void btn_recSpeedInc_click(GButton source, GEvent event) { //_CODE_:btn_r
   increasePlaybackSpeed();
 } //_CODE_:btn_recSpeedInc:686569:
 
+public void btn_recPrev_click(GButton source, GEvent event) { //_CODE_:btn_recPrev:834671:
+  println("btn_recPrev - GButton >> GEvent." + event + " @ " + millis());
+  previousPlayback();
+} //_CODE_:btn_recPrev:834671:
+
+public void cbx_paintbrush_clicked(GCheckbox source, GEvent event) { //_CODE_:cbx_paintbrush:577412:
+  println("checkbox1 - GCheckbox >> GEvent." + event + " @ " + millis());
+  config.usePaintColor = cbx_paintbrush.isSelected();
+} //_CODE_:cbx_paintbrush:577412:
+
 
 
 // Create all the GUI controls. 
@@ -239,26 +249,34 @@ public void createGUI(){
   tf_playbackDir.setText("Playback Directory");
   tf_playbackDir.setOpaque(true);
   tf_playbackDir.addEventHandler(this, "tf_playbackDir_change");
-  btn_recNext = new GButton(settings, 100, 470, 80, 30);
+  btn_recNext = new GButton(settings, 200, 470, 80, 30);
   btn_recNext.setText("Next Recording");
   btn_recNext.addEventHandler(this, "btn_recNext_click");
-  btn_recSave = new GButton(settings, 190, 470, 80, 30);
+  btn_recSave = new GButton(settings, 300, 470, 80, 30);
   btn_recSave.setText("Save Recording");
   btn_recSave.addEventHandler(this, "btn_recSave_click");
   btn_recRestart = new GButton(settings, 10, 470, 80, 30);
   btn_recRestart.setText("Restart Recording");
   btn_recRestart.addEventHandler(this, "btn_recRestart_click");
-  btn_recSpeedDec = new GButton(settings, 340, 470, 50, 30);
+  btn_recSpeedDec = new GButton(settings, 390, 470, 50, 30);
   btn_recSpeedDec.setText("Slower");
   btn_recSpeedDec.addEventHandler(this, "btn_recSpeedDec_click");
-  btn_recSpeedInc = new GButton(settings, 480, 470, 50, 30);
+  btn_recSpeedInc = new GButton(settings, 530, 470, 50, 30);
   btn_recSpeedInc.setText("Faster");
   btn_recSpeedInc.addEventHandler(this, "btn_recSpeedInc_click");
-  lbl_recSpeed = new GLabel(settings, 390, 470, 90, 30);
+  lbl_recSpeed = new GLabel(settings, 440, 470, 90, 30);
   lbl_recSpeed.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   lbl_recSpeed.setText("1X");
   lbl_recSpeed.setTextBold();
   lbl_recSpeed.setOpaque(false);
+  btn_recPrev = new GButton(settings, 110, 470, 80, 30);
+  btn_recPrev.setText("Previous Recording");
+  btn_recPrev.addEventHandler(this, "btn_recPrev_click");
+  cbx_paintbrush = new GCheckbox(settings, 150, 130, 140, 20);
+  cbx_paintbrush.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  cbx_paintbrush.setText("Active Color Enabled");
+  cbx_paintbrush.setOpaque(false);
+  cbx_paintbrush.addEventHandler(this, "cbx_paintbrush_clicked");
   settings.loop();
 }
 
@@ -290,3 +308,5 @@ GButton btn_recRestart;
 GButton btn_recSpeedDec; 
 GButton btn_recSpeedInc; 
 GLabel lbl_recSpeed; 
+GButton btn_recPrev; 
+GCheckbox cbx_paintbrush; 
