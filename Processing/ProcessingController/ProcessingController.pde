@@ -469,7 +469,7 @@ void processMessage(String ip, String message)
   if ( processIdleTimers() ) {
     return;
   }
-  
+
   String ystr = ip.substring(ip.lastIndexOf('.')+1, ip.length());
   int yidx = Integer.parseInt(ystr) - 1; //Change IP range to start at 1.
   //println("yidx: " + yidx);
@@ -491,6 +491,12 @@ void processMessage(String ip, String message)
       } else {
         grid.nextColorAtCoord(x, yidx);
       }
+
+      if (config.rippleEnabled) {
+        Peg p = grid.getPegAtCoord(x, yidx);
+        ripGen.addRipple(p.getPoint(), p.getColor());
+      }
+
       if (config.captureUsageEnabled) {
         screenshot();
       }
@@ -504,11 +510,14 @@ void processMessage(String ip, String message)
       recorder.captureClear();
       recorder.startNewFile();
 
-      if ( random(100) > 50 ) {
-        pac.start();
-      } else {
-        blink.start();
+      if (!pac.isPlaying() && !blink.isPlaying()) {
+        if ( random(100) > 50 ) {
+          pac.start();
+        } else {
+          blink.start();
+        }
       }
+
 
       shortIdleTimer.start();
       pressesSinceIdle = 0;

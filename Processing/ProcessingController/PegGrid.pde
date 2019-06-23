@@ -55,6 +55,11 @@ public class PegGrid
   {
     return getColorAtCoord(brushPeg.getX(), brushPeg.getY());
   }
+  
+  Peg getPegAtCoord(int x, int y)
+  {
+    return pegs[getIndexAtPoint(x,y)];
+  }
 
   boolean isBrushPeg(int idx)
   {

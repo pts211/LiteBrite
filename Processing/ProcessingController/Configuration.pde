@@ -17,12 +17,12 @@ public class Configuration
   
   // The minium number of presses required in the short idle timeout period to
   // consider the LiteBrite "in use" so it doesn't go back to the screensaver.
-  public final int MIN_ACTIVITY = 10;
+  public final int MIN_ACTIVITY = 20;
   
   
   //WorkDisplayTimer: This timer is how long the LiteBrite leaves someones recorded
   //design visible before going on to the next one.
-  public final int WORKDISPLAY_TIMEOUT = 5;
+  public final int WORKDISPLAY_TIMEOUT = 10;
   public final int WORKDISPLAY_TIMEOUT_UNIT = UnitTime.SECOND;
   
   public final String RELATIVE_PLAYBACK_DIRETCTORY = "../favorites";
