@@ -23,9 +23,11 @@ LiteBrite is a project created for Cerner's DevCon 2019. Its original purpose wa
 - Animated erasing 
 - Ripple effect
 - Image Viewer
-- Desktop displa
+- Desktop display
 - Save/Load Designs
 - Usage Recorder
+- Playback of timelapsed usage
+- Screensaver/power save
 - e1.31 support (TBD)
 - Idle notifications (TBD)
 - "Button Mash" mini-game (TBD)
