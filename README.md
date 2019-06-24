@@ -25,7 +25,7 @@ LiteBrite is a project created for Cerner's DevCon 2019. Its original purpose wa
 - Image Viewer
 - Desktop displa
 - Save/Load Designs
-- Usage Recorder (TBD)
+- Usage Recorder
 - e1.31 support (TBD)
 - Idle notifications (TBD)
 - "Button Mash" mini-game (TBD)
@@ -40,6 +40,13 @@ LiteBrite features:
 - 3 Adafruit FadeCandy boards
 - Unmanaged network switch
 - Interactivity handled through Processing.
+
+
+# Usage Details
+- DevCon: 111,314 presses (60,912; 50, 402)
+- Maker Faire: 332,135 presses (188,901; 143,234)
+
+Lifetime: 443,449 peg presses!
 
 # Acknowledgements
 Paul Sites and Aaron Kaplan designed, manufactured, and built LiteBrite but it was only possible with a lot of support, both from inside and outside of Cerner. 
