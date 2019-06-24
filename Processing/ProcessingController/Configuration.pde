@@ -22,8 +22,8 @@ public class Configuration
   
   //WorkDisplayTimer: This timer is how long the LiteBrite leaves someones recorded
   //design visible before going on to the next one.
-  public final int WORKDISPLAY_TIMEOUT = 10;
-  public final int WORKDISPLAY_TIMEOUT_UNIT = UnitTime.SECOND;
+  public final int WORKDISPLAY_TIMEOUT = 1;
+  public final int WORKDISPLAY_TIMEOUT_UNIT = UnitTime.MINUTE;
   
   public final String RELATIVE_PLAYBACK_DIRETCTORY = "../favorites";
   
