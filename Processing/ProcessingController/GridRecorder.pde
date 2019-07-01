@@ -99,7 +99,7 @@ public class GridRecorder
     int m = month();
     int d = day();
 
-    return y + ((m < 10)?"0"+str(m):str(m)) + ((d < 10)?"d"+str(d):str(d));
+    return y + ((m < 10)?"0"+str(m):str(m)) + ((d < 10)?"0"+str(d):str(d));
   }
 
   private String getFormattedTime(boolean delim)
